@@ -21,6 +21,28 @@ def test_health_endpoint():
     assert "version" in data
     print("[API TEST PASS] GET /api/v1/health passed OK.")
 
+def test_auth_login_endpoint():
+    payload = {"email": "registrar@auro.edu", "password": "securepassword"}
+    response = client.post("/api/v1/auth/login", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert data["user"]["role"] == "REGISTRAR"
+    print("[API TEST PASS] POST /api/v1/auth/login passed OK.")
+
+def test_auth_me_endpoint():
+    # Login first
+    login_res = client.post("/api/v1/auth/login", json={"email": "admin@auro.edu"})
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    response = client.get("/api/v1/auth/me", headers=headers)
+    assert response.status_code == 200
+    user_data = response.json()
+    assert user_data["email"] == "admin@auro.edu"
+    assert user_data["role"] == "REGISTRAR"
+    print("[API TEST PASS] GET /api/v1/auth/me passed OK.")
+
 def test_get_rooms_endpoint():
     response = client.get("/api/v1/rooms")
     assert response.status_code == 200
@@ -56,6 +78,8 @@ def test_ai_chat_endpoint():
 
 if __name__ == "__main__":
     test_health_endpoint()
+    test_auth_login_endpoint()
+    test_auth_me_endpoint()
     test_get_rooms_endpoint()
     test_get_faculty_endpoint()
     test_get_courses_endpoint()

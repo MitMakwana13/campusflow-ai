@@ -12,9 +12,12 @@ from backend.app.algorithms.ppo import PPOOptimizer
 from backend.app.reports.pdf_generator import generate_executive_audit_report
 
 try:
-    from fastapi import FastAPI, HTTPException
+    from typing import List
+    from fastapi import FastAPI, HTTPException, Depends, status
     from fastapi.responses import HTMLResponse
     from fastapi.middleware.cors import CORSMiddleware
+    from backend.app.schemas.domain import RoomCreate, RoomResponse, FacultyCreate, FacultyResponse, CourseCreate, CourseResponse
+    from backend.app.core.security import get_current_user
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
@@ -62,50 +65,73 @@ if FASTAPI_AVAILABLE:
             "seededRoomsCount": room_cnt
         }
 
-    @app.get("/api/v1/rooms")
+    @app.post("/api/v1/auth/login", status_code=200)
+    def login(payload: dict):
+        email = payload.get("email", "admin@auro.edu")
+        password = payload.get("password", "admin123")
+        role = "REGISTRAR" if ("admin" in email or "registrar" in email) else "HOD"
+        from backend.app.core.security import create_access_token
+        token = create_access_token("usr_" + email.split("@")[0], email, role)
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "user": {
+                "id": "usr_" + email.split("@")[0],
+                "email": email,
+                "fullName": "AURO Academic Admin",
+                "role": role,
+                "is_active": True
+            }
+        }
+
+    @app.get("/api/v1/auth/me")
+    def get_me(user: dict = Depends(get_current_user)):
+        return user
+
+    @app.get("/api/v1/rooms", response_model=List[RoomResponse])
     def get_rooms():
         from backend.app.db.repository import RoomRepository
         return RoomRepository.get_all()
 
-    @app.post("/api/v1/rooms")
-    def create_room(payload: dict):
+    @app.post("/api/v1/rooms", response_model=RoomResponse, status_code=status.HTTP_201_CREATED)
+    def create_room(payload: RoomCreate):
         from backend.app.db.repository import RoomRepository
         return RoomRepository.create(
-            code=payload.get("code", "R-100"),
-            name=payload.get("name", "New Room"),
-            building=payload.get("building", "Academic Block"),
-            capacity=payload.get("capacity", 30),
-            is_lab=payload.get("is_lab", False)
+            code=payload.code,
+            name=payload.name,
+            building=payload.building,
+            capacity=payload.capacity,
+            is_lab=payload.is_lab
         )
 
-    @app.get("/api/v1/faculty")
+    @app.get("/api/v1/faculty", response_model=List[FacultyResponse])
     def get_faculty():
         from backend.app.db.repository import FacultyRepository
         return FacultyRepository.get_all()
 
-    @app.post("/api/v1/faculty")
-    def create_faculty(payload: dict):
+    @app.post("/api/v1/faculty", response_model=FacultyResponse, status_code=status.HTTP_201_CREATED)
+    def create_faculty(payload: FacultyCreate):
         from backend.app.db.repository import FacultyRepository
         return FacultyRepository.create(
-            name=payload.get("name", "Dr. New Faculty"),
-            department=payload.get("department", "School of IT"),
-            max_hours=payload.get("max_workload_hours", 16)
+            name=payload.name,
+            department=payload.department,
+            max_hours=payload.max_workload_hours
         )
 
-    @app.get("/api/v1/courses")
+    @app.get("/api/v1/courses", response_model=List[CourseResponse])
     def get_courses():
         from backend.app.db.repository import CourseRepository
         return CourseRepository.get_all()
 
-    @app.post("/api/v1/courses")
-    def create_course(payload: dict):
+    @app.post("/api/v1/courses", response_model=CourseResponse, status_code=status.HTTP_201_CREATED)
+    def create_course(payload: CourseCreate):
         from backend.app.db.repository import CourseRepository
         return CourseRepository.create(
-            code=payload.get("code", "CS-100"),
-            name=payload.get("name", "Intro to CS"),
-            department=payload.get("department", "School of IT"),
-            faculty_name=payload.get("faculty_name", "Dr. Sharma"),
-            students=payload.get("enrolled_students", 30)
+            code=payload.code,
+            name=payload.name,
+            department=payload.department,
+            faculty_name=payload.faculty_name,
+            students=payload.enrolled_students
         )
 
     @app.get("/api/v1/timetable")
