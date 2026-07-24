@@ -11,8 +11,16 @@ def get_db_connection():
             if db_url.startswith("postgres://"):
                 db_url = db_url.replace("postgres://", "postgresql://", 1)
             
-            # Ensure sslmode=require for Supabase cloud PostgreSQL
-            conn = psycopg2.connect(db_url, sslmode="require")
+            # 1. Attempt direct connection or IPv4 pooler retry (port 6543 for Supabase)
+            try:
+                conn = psycopg2.connect(db_url, sslmode="require", connect_timeout=5)
+            except Exception as first_err:
+                if ":5432/" in db_url:
+                    alt_url = db_url.replace(":5432/", ":6543/")
+                    conn = psycopg2.connect(alt_url, sslmode="require", connect_timeout=5)
+                else:
+                    raise first_err
+
             cursor = conn.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS rooms (
