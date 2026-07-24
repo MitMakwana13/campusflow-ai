@@ -1,0 +1,6 @@
+id,code,name,building,capacity,room_type
+rm_1,C-231,Classroom C-231,Academic Block C,60,lecture
+rm_2,B-222,Classroom B-222,Academic Block B,60,lecture
+rm_3,AB-108,Lecture Hall AB-108,Academic Block A,120,auditorium
+rm_4,LAB-1,Computer Lab 1,IT Block,40,lab
+rm_5,LAB-2,Computer Lab 2,IT Block,40,lab

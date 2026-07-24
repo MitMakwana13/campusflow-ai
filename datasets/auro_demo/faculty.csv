@@ -1,0 +1,5 @@
+id,employee_id,name,email,designation,max_hours_per_week
+fac_1,EMP-101,Dr. Thaker,thaker@auro.edu.in,Professor,18
+fac_2,EMP-102,Dr. Sunil Kumar,sunil@auro.edu.in,Associate Professor,20
+fac_3,EMP-103,Ms. Chakrabarty,chakrabarty@auro.edu.in,Assistant Professor,22
+fac_4,EMP-104,Dr. Mehta,mehta@auro.edu.in,Professor,16

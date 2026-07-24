@@ -1,0 +1,9 @@
+algorithm: PPO
+reward_version: v2
+episodes: 50
+learning_rate: 0.0003
+gamma: 0.99
+entropy_coef: 0.01
+seed: 42
+environment: TimetableEnv-v1
+dataset: AURO_School_of_IT

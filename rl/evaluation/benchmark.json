@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-07-24T22:13:27.353673",
+  "dataset": "AURO University School of IT",
+  "trainingTimesteps": 1000,
+  "executionTimeSeconds": 2.83,
+  "benchmarkMatrix": [
+    {
+      "algorithm": "Manual Schedule (Baseline)",
+      "execution_time_seconds": 0.0,
+      "reward_score": -660,
+      "hard_conflicts_count": 1,
+      "room_utilization_percent": 68.0,
+      "status": "BASELINE"
+    },
+    {
+      "algorithm": "Rule-Based Solver",
+      "execution_time_seconds": 0.04,
+      "reward_score": 240,
+      "hard_conflicts_count": 0,
+      "room_utilization_percent": 75.0,
+      "status": "PASSED"
+    },
+    {
+      "algorithm": "Greedy Local Search",
+      "execution_time_seconds": 0.12,
+      "reward_score": 240,
+      "hard_conflicts_count": 0,
+      "room_utilization_percent": 84.0,
+      "status": "PASSED"
+    },
+    {
+      "algorithm": "PPO (Reinforcement Learning)",
+      "execution_time_seconds": 1.85,
+      "reward_score": 290,
+      "hard_conflicts_count": 0,
+      "room_utilization_percent": 92.0,
+      "status": "PASSED (NEURAL POLICY INFERENCE)"
+    }
+  ]
+}

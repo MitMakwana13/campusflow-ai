@@ -1,0 +1,5 @@
+id,code,name,program_code,semester,credits,hours_per_week,course_type
+crs_1,IMBTTO306,Database Management Systems,BSc IT,3,4,3,lecture
+crs_2,IIQATO301,Machine Learning Fundamentals,BSc IT,5,4,3,lecture
+crs_3,CS101,Introduction to Programming,BSc IT,1,4,4,lecture
+crs_4,CS102,Data Structures & Algorithms,BSc IT,2,4,4,lecture

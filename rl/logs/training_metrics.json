@@ -1,0 +1,262 @@
+{
+  "config": {
+    "algorithm": "PPO",
+    "episodes": 50,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "entropy_coef": 0.01,
+    "seed": 42
+  },
+  "history": [
+    {
+      "episode": 1,
+      "reward": 2840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 2,
+      "reward": -1160,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 3,
+      "reward": 1840,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 4,
+      "reward": -5160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 5,
+      "reward": -4160,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 6,
+      "reward": 4840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 7,
+      "reward": 3840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 8,
+      "reward": -160,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 9,
+      "reward": 840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 10,
+      "reward": 840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 11,
+      "reward": -4160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 12,
+      "reward": 840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 13,
+      "reward": -160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 14,
+      "reward": 4840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 15,
+      "reward": 1840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 16,
+      "reward": -2160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 17,
+      "reward": 4840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 18,
+      "reward": 840,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 19,
+      "reward": -1160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 20,
+      "reward": 3840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 21,
+      "reward": 4840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 22,
+      "reward": -2160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 23,
+      "reward": 4840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 24,
+      "reward": 1840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 25,
+      "reward": 840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 26,
+      "reward": -1160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 27,
+      "reward": 2840,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 28,
+      "reward": 840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 29,
+      "reward": 1840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 30,
+      "reward": -160,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 31,
+      "reward": -160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 32,
+      "reward": -160,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 33,
+      "reward": 2840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 34,
+      "reward": -1160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 35,
+      "reward": -4160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 36,
+      "reward": 840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 37,
+      "reward": 1840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 38,
+      "reward": 1840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 39,
+      "reward": -1160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 40,
+      "reward": 1840,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 41,
+      "reward": -160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 42,
+      "reward": 2840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 43,
+      "reward": 840,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 44,
+      "reward": -2160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 45,
+      "reward": -2160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 46,
+      "reward": 840,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 47,
+      "reward": 1840,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 48,
+      "reward": 840,
+      "hard_conflicts": 1
+    },
+    {
+      "episode": 49,
+      "reward": -160,
+      "hard_conflicts": 0
+    },
+    {
+      "episode": 50,
+      "reward": 1840,
+      "hard_conflicts": 0
+    }
+  ]
+}

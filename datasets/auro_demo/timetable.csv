@@ -1,0 +1,7 @@
+id,day,time_slot_id,course_code,faculty_name,room_code,entry_type,version_type
+e1,Monday,1,IMBTTO306,Dr. Thaker,C-231,lecture,MANUAL
+e2,Monday,2,IIQATO301,Ms. Chakrabarty,AB-108,lecture,MANUAL
+e3,Tuesday,1,CS101,Dr. Sunil Kumar,C-231,lecture,MANUAL
+e4,Tuesday,2,IMBTTO306,Dr. Thaker,B-222,lecture,MANUAL
+e5,Tuesday,2,IIQATO301,Ms. Chakrabarty,B-222,lecture,MANUAL
+e6,Wednesday,1,CS102,Dr. Mehta,AB-108,lecture,MANUAL

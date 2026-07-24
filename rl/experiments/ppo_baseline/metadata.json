@@ -1,0 +1,10 @@
+{
+  "experiment_id": "ppo_baseline_v1",
+  "algorithm": "PPO",
+  "reward_version": "v2",
+  "training_seed": 42,
+  "episodes": 50,
+  "created_at": "2026-07-24T21:00:00Z",
+  "dataset": "AURO School of IT Semester 3/5/7",
+  "model_checkpoint": "ppo_latest.zip"
+}
