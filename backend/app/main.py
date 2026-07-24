@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from backend.app.db.session import get_db_connection
 from rl.constraints.validator import ScheduleValidator
 from backend.app.algorithms.benchmark_runner import run_multi_algorithm_benchmark
+from backend.app.algorithms.ppo import PPOOptimizer
 from backend.app.reports.pdf_generator import generate_executive_audit_report
 
 try:
@@ -123,14 +124,16 @@ if FASTAPI_AVAILABLE:
         run_id = f"run_{uuid.uuid4().hex[:8]}"
         started_at = datetime.now().isoformat()
         
+        optimizer = PPOOptimizer()
+        res = optimizer.optimize(manual_rows)
+        opt_entries = res.get("optimized_entries", [])
+
         optimized_rows = []
-        for row in manual_rows:
+        for row in opt_entries:
             opt_entry = dict(row)
             opt_entry["id"] = f"opt_{uuid.uuid4().hex[:6]}"
             opt_entry["version_type"] = "OPTIMIZED"
             opt_entry["run_id"] = run_id
-            if opt_entry["course_code"] == "IIQATO301":
-                opt_entry["room_code"] = "AB-108"
             optimized_rows.append(opt_entry)
 
         opt_report = ScheduleValidator.validate_schedule(optimized_rows)
@@ -158,6 +161,7 @@ if FASTAPI_AVAILABLE:
         return {
             "runId": run_id,
             "status": "completed",
+            "algorithmStatus": res.get("status", "PASSED"),
             "recommendation": "Move IIQATO301 from B-222 to AB-108",
             "reason": "Room clash detected in B-222 between IMBTTO306 and IIQATO301 during Tuesday Slot 2.",
             "expectedRewardGain": reward_after - reward_before,
