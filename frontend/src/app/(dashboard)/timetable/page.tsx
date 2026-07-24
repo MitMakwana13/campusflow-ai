@@ -299,29 +299,49 @@ export default function TimetablePage() {
               <button onClick={() => setShowBenchmarkModal(false)} className="text-zinc-400 hover:text-white">✕</button>
             </div>
 
-            <div className="overflow-x-auto font-mono text-xs">
-              <table className="w-full text-left text-zinc-300">
-                <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800">
-                  <tr>
-                    <th className="p-3">Algorithm</th>
-                    <th className="p-3">Exec Time</th>
-                    <th className="p-3">Reward Score</th>
-                    <th className="p-3">Hard Conflicts</th>
-                    <th className="p-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-800/60">
-                  {benchmarkMatrix.map((item, idx) => (
-                    <tr key={idx} className={item.algorithm.includes('PPO') ? 'bg-indigo-500/10 font-bold text-white' : ''}>
-                      <td className="p-3">{item.algorithm}</td>
-                      <td className="p-3 text-zinc-400">{item.execution_time_seconds}s</td>
-                      <td className="p-3 text-emerald-400">{item.reward_score} pts</td>
-                      <td className="p-3">{item.hard_conflicts_count === 0 ? <span className="text-emerald-400">0</span> : <span className="text-rose-400">{item.hard_conflicts_count}</span>}</td>
-                      <td className="p-3"><span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">{item.status}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-4">
+              {benchmarkMatrix.map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className={`p-4 rounded-2xl border transition-all ${
+                    item.algorithm.includes('PPO') 
+                      ? 'bg-indigo-500/10 border-indigo-500/30' 
+                      : 'bg-zinc-950 border-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-xs font-mono mb-2">
+                    <span className="font-bold text-white font-sans text-sm flex items-center gap-2">
+                      <span>{item.algorithm}</span>
+                      {item.algorithm.includes('PPO') && (
+                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px]">
+                          Active Policy
+                        </span>
+                      )}
+                    </span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-zinc-400">{item.execution_time_seconds}s</span>
+                      <span className="text-emerald-400 font-bold text-sm">+{item.reward_score} pts</span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-zinc-900 h-2.5 rounded-full overflow-hidden mb-2">
+                    <div 
+                      className={`h-full rounded-full transition-all ${
+                        item.algorithm.includes('PPO')
+                          ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400'
+                          : 'bg-zinc-700'
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(15, (item.reward_score / 340) * 100))}%` }}
+                    />
+                  </div>
+
+                  <div className="flex justify-between text-[11px] font-mono text-zinc-400">
+                    <span>Hard Conflicts: <strong className={item.hard_conflicts_count === 0 ? "text-emerald-400" : "text-rose-400"}>{item.hard_conflicts_count}</strong></span>
+                    <span>Status: <span className="text-zinc-300">{item.status}</span></span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

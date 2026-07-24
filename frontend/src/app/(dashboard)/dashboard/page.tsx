@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { 
   BrainCircuit, 
@@ -10,13 +11,16 @@ import {
   DoorOpen,
   Cpu, 
   FileCheck,
-  Terminal
+  ChevronRight
 } from "lucide-react";
 import { CampusLiveFeed } from "@/features/dashboard";
 import { MOCK_ACTIVITY_FEED } from "@/lib/mock/dashboard";
 import { ROUTES } from "@/constants/routes";
+import { BuildingDrilldownModal } from "@/components/domain/BuildingDrilldownModal";
 
 export default function AppDashboardPage() {
+  const [showDrilldown, setShowDrilldown] = useState(false);
+
   return (
     <div className="space-y-8 max-w-[1400px] mx-auto pb-12 animate-in fade-in duration-500">
       
@@ -62,13 +66,20 @@ export default function AppDashboardPage() {
           <p className="text-xs text-zinc-400">Zero hard conflicts across AURO dataset.</p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md space-y-2">
+        {/* Room Utilization Card with Drilldown Action */}
+        <div 
+          onClick={() => setShowDrilldown(true)}
+          className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 hover:border-indigo-500/50 cursor-pointer backdrop-blur-md space-y-2 transition-all group"
+        >
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-xs font-mono font-semibold uppercase">Room Utilization</span>
-            <DoorOpen className="w-4 h-4 text-indigo-400" />
+            <DoorOpen className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
           </div>
-          <div className="text-3xl font-extrabold text-white font-mono">92%</div>
-          <p className="text-xs text-zinc-400">+24% gain after PPO policy rollout.</p>
+          <div className="text-3xl font-extrabold text-white font-mono flex items-center justify-between">
+            <span>92%</span>
+            <ChevronRight className="w-4 h-4 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          <p className="text-xs text-indigo-300 font-medium">Click to inspect building breakdown →</p>
         </div>
 
         <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md space-y-2">
@@ -179,6 +190,9 @@ export default function AppDashboardPage() {
         </div>
         <CampusLiveFeed feedItems={MOCK_ACTIVITY_FEED} />
       </div>
+
+      {/* Drilldown Modal */}
+      <BuildingDrilldownModal isOpen={showDrilldown} onClose={() => setShowDrilldown(false)} />
 
     </div>
   );
