@@ -20,6 +20,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
+import { GlowCard } from "@/components/ui/spotlight-card";
 
 export default function MarketingLandingPage() {
   return (
@@ -118,7 +119,7 @@ export default function MarketingLandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Manual Scheduling (Old Way) */}
-          <div className="p-8 rounded-3xl bg-zinc-900/40 border border-rose-500/20 space-y-6">
+          <GlowCard glowColor="red" customSize className="w-full h-auto p-8 space-y-6">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-rose-400 uppercase tracking-wider">Traditional Method</span>
               <AlertTriangle className="w-5 h-5 text-rose-400" />
@@ -140,10 +141,10 @@ export default function MarketingLandingPage() {
                 <span><strong>Zero Reasoning:</strong> No audit trail when faculty requests schedule changes.</span>
               </li>
             </ul>
-          </div>
+          </GlowCard>
 
           {/* CampusFlow AI (New Way) */}
-          <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-950/40 to-zinc-900/60 border border-indigo-500/30 space-y-6 shadow-2xl">
+          <GlowCard glowColor="purple" customSize className="w-full h-auto p-8 space-y-6">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">CampusFlow AI Engine</span>
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
@@ -165,7 +166,7 @@ export default function MarketingLandingPage() {
                 <span><strong>AI Natural Explanation:</strong> Instant intent parsing for dean queries.</span>
               </li>
             </ul>
-          </div>
+          </GlowCard>
 
         </div>
       </section>
@@ -179,45 +180,45 @@ export default function MarketingLandingPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           
-          <div className="p-6 rounded-2xl bg-zinc-900/70 border border-zinc-800 text-center space-y-3">
+          <GlowCard glowColor="blue" customSize className="p-6 text-center space-y-3">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mx-auto">
               <Zap className="w-5 h-5" />
             </div>
             <div className="text-xs font-mono font-bold text-zinc-400 uppercase">Frontend</div>
             <div className="text-sm font-extrabold text-white">Next.js 16 App</div>
-          </div>
+          </GlowCard>
 
-          <div className="p-6 rounded-2xl bg-zinc-900/70 border border-zinc-800 text-center space-y-3">
+          <GlowCard glowColor="purple" customSize className="p-6 text-center space-y-3">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mx-auto">
               <Terminal className="w-5 h-5" />
             </div>
             <div className="text-xs font-mono font-bold text-zinc-400 uppercase">Backend API</div>
             <div className="text-sm font-extrabold text-white">FastAPI (Render)</div>
-          </div>
+          </GlowCard>
 
-          <div className="p-6 rounded-2xl bg-zinc-900/70 border border-zinc-800 text-center space-y-3">
+          <GlowCard glowColor="green" customSize className="p-6 text-center space-y-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto">
               <BrainCircuit className="w-5 h-5" />
             </div>
             <div className="text-xs font-mono font-bold text-zinc-400 uppercase">RL Policy</div>
             <div className="text-sm font-extrabold text-white">SB3 PPO v1.zip</div>
-          </div>
+          </GlowCard>
 
-          <div className="p-6 rounded-2xl bg-zinc-900/70 border border-zinc-800 text-center space-y-3">
+          <GlowCard glowColor="orange" customSize className="p-6 text-center space-y-3">
             <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mx-auto">
               <Database className="w-5 h-5" />
             </div>
             <div className="text-xs font-mono font-bold text-zinc-400 uppercase">Database</div>
             <div className="text-sm font-extrabold text-white">Supabase PG</div>
-          </div>
+          </GlowCard>
 
-          <div className="p-6 rounded-2xl bg-zinc-900/70 border border-zinc-800 text-center space-y-3">
+          <GlowCard glowColor="purple" customSize className="p-6 text-center space-y-3">
             <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 mx-auto">
               <Sparkles className="w-5 h-5" />
             </div>
             <div className="text-xs font-mono font-bold text-zinc-400 uppercase">Copilot</div>
             <div className="text-sm font-extrabold text-white">Intent Parser</div>
-          </div>
+          </GlowCard>
 
         </div>
       </section>
@@ -231,29 +232,29 @@ export default function MarketingLandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 space-y-4">
+          <GlowCard glowColor="green" customSize className="p-8 space-y-4">
             <div className="text-xs font-mono text-zinc-400 uppercase">Hard Clashes</div>
             <div className="text-5xl font-extrabold text-emerald-400 font-mono">0</div>
             <p className="text-xs text-zinc-400">Zero double-bookings recorded across 55 rooms.</p>
-          </div>
+          </GlowCard>
 
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 space-y-4">
+          <GlowCard glowColor="blue" customSize className="p-8 space-y-4">
             <div className="text-xs font-mono text-zinc-400 uppercase">Room Utilization</div>
             <div className="text-5xl font-extrabold text-white font-mono">92%</div>
             <p className="text-xs text-emerald-400 font-semibold">+24% capacity gain post PPO rollout.</p>
-          </div>
+          </GlowCard>
 
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 space-y-4">
+          <GlowCard glowColor="purple" customSize className="p-8 space-y-4">
             <div className="text-xs font-mono text-zinc-400 uppercase">PPO Policy Reward</div>
             <div className="text-5xl font-extrabold text-indigo-400 font-mono">+340</div>
             <p className="text-xs text-zinc-400">Evaluated on Gymnasium TimetableEnv.</p>
-          </div>
+          </GlowCard>
 
-          <div className="p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800 space-y-4">
+          <GlowCard glowColor="green" customSize className="p-8 space-y-4">
             <div className="text-xs font-mono text-zinc-400 uppercase">System Verification</div>
             <div className="text-5xl font-extrabold text-purple-400 font-mono">10/10</div>
             <p className="text-xs text-zinc-400">Automated verification checks passed.</p>
-          </div>
+          </GlowCard>
 
         </div>
       </section>
