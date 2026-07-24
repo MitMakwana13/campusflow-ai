@@ -76,6 +76,20 @@ def test_ai_chat_endpoint():
     assert data["contextGrounded"] is True
     print("[API TEST PASS] POST /api/v1/ai/chat passed OK.")
 
+def test_ai_tools_endpoints():
+    res_fac = client.get("/api/v1/ai/tools/faculty-workload")
+    assert res_fac.status_code == 200
+    assert isinstance(res_fac.json(), list)
+    
+    res_room = client.get("/api/v1/ai/tools/room-utilization")
+    assert res_room.status_code == 200
+    assert isinstance(res_room.json(), list)
+    
+    res_const = client.get("/api/v1/ai/tools/constraints")
+    assert res_const.status_code == 200
+    assert "hard_constraints" in res_const.json()
+    print("[API TEST PASS] GET /api/v1/ai/tools/* endpoints passed OK.")
+
 if __name__ == "__main__":
     test_health_endpoint()
     test_auth_login_endpoint()
@@ -84,4 +98,5 @@ if __name__ == "__main__":
     test_get_faculty_endpoint()
     test_get_courses_endpoint()
     test_ai_chat_endpoint()
+    test_ai_tools_endpoints()
     print("\n[ALL REST API CONTRACT TESTS PASSED SUCCESSFULLY]")

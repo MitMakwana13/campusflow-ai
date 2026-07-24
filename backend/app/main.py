@@ -299,8 +299,30 @@ if FASTAPI_AVAILABLE:
         return HTMLResponse(content=html_report)
 
     @app.post("/api/v1/ai/chat")
-    def ai_chat_analyst(payload: dict):
-        question = payload.get("question", "Explain last optimization")
+    def ai_chat(payload: dict):
+        from backend.app.ai.ollama_client import OllamaClient
+        question = payload.get("question", "Explain room allocations")
+        answer = OllamaClient.query_ai_analyst(question)
+        return {
+            "answer": answer,
+            "contextGrounded": True,
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+    @app.get("/api/v1/ai/tools/faculty-workload")
+    def get_faculty_workload_tool():
+        from backend.app.ai.tools import SchedulingTools
+        return SchedulingTools.get_faculty_workload()
+
+    @app.get("/api/v1/ai/tools/room-utilization")
+    def get_room_utilization_tool():
+        from backend.app.ai.tools import SchedulingTools
+        return SchedulingTools.get_room_utilization()
+
+    @app.get("/api/v1/ai/tools/constraints")
+    def get_constraints_tool():
+        from backend.app.ai.tools import SchedulingTools
+        return SchedulingTools.get_constraint_summary()
         try:
             from backend.app.ai import chat as ollama_chat, ContextBuilder, build_optimization_explanation_prompt, DecisionExplainer
             

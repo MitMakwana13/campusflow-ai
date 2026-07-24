@@ -28,6 +28,11 @@ class OllamaClient:
             print(f"[OllamaClient Notice] Local Ollama daemon unreachable ({e}). Returning deterministic explanation.")
             return "⚠ Local Ollama is unavailable (http://localhost:11434). Showing deterministic optimization explanation instead."
 
+    @classmethod
+    def query_ai_analyst(cls, prompt: str, model: str = "deepseek-r1:8b") -> str:
+        client = cls()
+        return client.chat([{"role": "user", "content": prompt}], model=model)
+
 def chat(messages: List[Dict[str, str]], model: str = "deepseek-r1:8b") -> str:
     client = OllamaClient()
     return client.chat(messages, model=model)
