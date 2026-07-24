@@ -1,5 +1,6 @@
 """
 CampusFlow AI v2.0 — Stateless Async Ollama Provider Implementation
+Supports versioned intent schemas and confidence scoring.
 """
 
 import json
@@ -46,22 +47,30 @@ class OllamaProvider(BaseAIProvider):
 
     async def query(self, question: str) -> dict:
         q_lower = question.lower()
+        missing = []
+
         if "free" in q_lower or "empty" in q_lower:
             intent = "find_free_rooms"
-            filters = {"status": "available", "room_type": "all"}
+            filters = {"status": "available", "room_type": "lab" if "lab" in q_lower else "all"}
+            if not any(day in q_lower for day in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]):
+                missing.append("day")
+            confidence = 0.95 if not missing else 0.75
         elif "faculty" in q_lower or "overload" in q_lower:
-            intent = "check_faculty_workload"
+            intent = "find_overloaded_faculty"
             filters = {"max_hours_exceeded": True}
+            confidence = 0.92
         else:
-            intent = "search_courses"
+            intent = "find_course_schedule"
             filters = {"keyword": question}
+            confidence = 0.88
 
         return {
+            "schemaVersion": "1.0",
             "originalQuery": question,
-            "structuredIntent": {
-                "intent": intent,
-                "filters": filters
-            },
+            "intent": intent,
+            "confidence": confidence,
+            "filters": filters,
+            "missingParameters": missing,
             "provider": f"Ollama ({self.model})"
         }
 
