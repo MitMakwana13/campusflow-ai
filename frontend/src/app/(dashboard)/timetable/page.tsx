@@ -383,8 +383,8 @@ export default function TimetablePage() {
       <ConstraintTunerModal 
         isOpen={showConstraintModal}
         onClose={() => setShowConstraintModal(false)}
-        onApplyWeights={(w) => {
-          setLastOperationMessage(`Gymnasium reward weights updated [Capacity:${w.roomCapacity}x, MaxHours:${w.facultyMaxHours}x]`);
+        onApplyWeights={(w, profileName) => {
+          setLastOperationMessage(`Scheduling Priorities Updated [${profileName}]: PPO reward vector re-calculated`);
           handleOptimize();
         }}
       />
