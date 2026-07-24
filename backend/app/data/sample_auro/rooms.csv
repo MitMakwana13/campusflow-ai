@@ -1,0 +1,3 @@
+room_number,building,capacity,has_gpu
+L101,Main Block,60,false
+L102,Tech Block,45,true

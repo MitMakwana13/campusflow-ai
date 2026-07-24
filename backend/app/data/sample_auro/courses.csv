@@ -1,0 +1,3 @@
+code,name,faculty_id,students_enrolled,requires_gpu
+CS101,Intro to CS,F01,40,false
+CS201,Data Structures,F02,35,true
