@@ -324,3 +324,15 @@ if FASTAPI_AVAILABLE:
         from backend.app.ai.tools import SchedulingTools
         return SchedulingTools.get_constraint_summary()
 
+    @app.post("/api/v1/optimizer/marl-optimize")
+    def marl_optimize(payload: dict):
+        from backend.app.optimizer.marl import MultiAgentCoordinator
+        mode = payload.get("objective_mode", "Balanced")
+        pinned = payload.get("pinned_constraints", [])
+        result = MultiAgentCoordinator.optimize_with_agents([], objective_mode=mode, pinned_constraints=pinned)
+        return {
+            "status": "success",
+            "optimization_id": f"OPT-MARL-{datetime.utcnow().strftime('%M%S')}",
+            "result": result
+        }
+

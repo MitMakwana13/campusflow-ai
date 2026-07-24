@@ -90,6 +90,16 @@ def test_ai_tools_endpoints():
     assert "hard_constraints" in res_const.json()
     print("[API TEST PASS] GET /api/v1/ai/tools/* endpoints passed OK.")
 
+def test_marl_optimize_endpoint():
+    payload = {"objective_mode": "Faculty Friendly", "pinned_constraints": [{"course": "CS-101", "room": "A101"}]}
+    res = client.post("/api/v1/optimizer/marl-optimize", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "result" in data
+    assert data["result"]["mode"] == "Faculty Friendly"
+    print("[API TEST PASS] POST /api/v1/optimizer/marl-optimize passed OK.")
+
 if __name__ == "__main__":
     test_health_endpoint()
     test_auth_login_endpoint()
@@ -99,4 +109,5 @@ if __name__ == "__main__":
     test_get_courses_endpoint()
     test_ai_chat_endpoint()
     test_ai_tools_endpoints()
+    test_marl_optimize_endpoint()
     print("\n[ALL REST API CONTRACT TESTS PASSED SUCCESSFULLY]")
