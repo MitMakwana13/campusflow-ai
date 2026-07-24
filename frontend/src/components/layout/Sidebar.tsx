@@ -16,9 +16,10 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { name: "Executive Core", href: "/", icon: LayoutDashboard },
+  { name: "Executive Core", href: "/dashboard", icon: LayoutDashboard },
   { name: "PPO Engine", href: "/timetable", icon: CalendarDays, badge: "v1.0" },
   { name: "AI Copilot", href: "/ai", icon: Sparkles, badge: "v2.0" },
+  { name: "Verification", href: "/verification", icon: ShieldCheck, badge: "10/10" },
   { name: "Faculty Roster", href: "/faculty", icon: Users },
   { name: "Smart Rooms", href: "/rooms", icon: DoorOpen },
   { name: "Course Directory", href: "/courses", icon: BookOpen },
