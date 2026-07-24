@@ -95,6 +95,18 @@ class OptimizationRun(Base):
     status = Column(String, default="COMPLETED")
     model_version = Column(String, default="ppo_v1.0")
 
+class OptimizationProfile(Base):
+    __tablename__ = "optimization_profiles"
+    id = Column(String, primary_key=True)
+    optimization_run_id = Column(String, ForeignKey("optimization_runs.id"), nullable=True)
+    profile_name = Column(String, nullable=False)  # Balanced, Faculty Friendly, Room Efficient, Student Friendly
+    hard_conflicts = Column(Integer, default=0)
+    room_utilization_pct = Column(Float, nullable=False)
+    faculty_fairness_pct = Column(Float, nullable=False)
+    student_gap_score_pct = Column(Float, nullable=False)
+    overall_satisfaction_pct = Column(Float, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     id = Column(String, primary_key=True)
