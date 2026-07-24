@@ -23,6 +23,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OperationsActionModal } from "@/components/operations/OperationsActionModal";
 
 export default function TimetablePage() {
   const [isOptimized, setIsOptimized] = useState(false);
@@ -33,6 +34,8 @@ export default function TimetablePage() {
   const [explanation, setExplanation] = useState<AIExplanation | null>(null);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [showBenchmarkModal, setShowBenchmarkModal] = useState(false);
+  const [showOperationsModal, setShowOperationsModal] = useState(false);
+  const [lastOperationMessage, setLastOperationMessage] = useState<string | null>(null);
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<any[]>([]);
 
   useEffect(() => {
@@ -113,6 +116,14 @@ export default function TimetablePage() {
             </button>
           </div>
           
+          <button 
+            onClick={() => setShowOperationsModal(true)} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-xs text-purple-300 font-mono transition-all"
+          >
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span>+ Add Event / Action</span>
+          </button>
+
           <button 
             onClick={handleRunBenchmark} 
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-mono transition-all"
@@ -346,6 +357,16 @@ export default function TimetablePage() {
           </div>
         </div>
       )}
+
+      {/* Operations Modal */}
+      <OperationsActionModal 
+        isOpen={showOperationsModal}
+        onClose={() => setShowOperationsModal(false)}
+        onActionComplete={(type, details) => {
+          setLastOperationMessage(`Operation logged [${type.toUpperCase()}]: ${details}`);
+          handleOptimize();
+        }}
+      />
 
     </div>
   );
