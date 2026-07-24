@@ -11,3 +11,5 @@ gymnasium
 stable-baselines3
 matplotlib
 pandas
+httpx
+ollama
