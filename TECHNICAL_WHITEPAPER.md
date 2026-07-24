@@ -50,13 +50,19 @@ CampusFlow AI is engineered as a decoupled, full-stack micro-platform:
 
 The core optimization solver is formulated as a Markov Decision Process (MDP) implemented via a custom Gymnasium environment (`backend/app/rl/env.py`).
 
-### 2.1 State (Observation) Space Vectorization
+### 2.1 State (Observation) Space Vectorization & Dimensionality Breakdown
 The state space tensor $\mathbf{S}_t$ encapsulates the spatial-temporal availability matrix of the campus across Days ($D=5$), Time Slots ($T=6$), Rooms ($R=10$), Faculty ($F=15$), and Student Batches ($B=6$):
 $$\mathbf{S}_t = \{ \mathbf{R}_{\text{avail}}, \mathbf{F}_{\text{avail}}, \mathbf{B}_{\text{schedule}}, \mathbf{E}_{\text{hardware}} \}$$
 
 To feed $\mathbf{S}_t$ into PyTorch neural policy layers, tensor components are flattened into a 1D continuous feature vector:
-$$\mathbf{v}_{\text{obs}} = \text{Concat}\left( \text{Flatten}(\mathbf{R}_{\text{avail}}), \text{Flatten}(\mathbf{F}_{\text{avail}}), \text{Flatten}(\mathbf{B}_{\text{schedule}}), \text{Flatten}(\mathbf{E}_{\text{hardware}}) \right) \in \mathbb{R}^{d_{\text{input}}}$$
-Where $d_{\text{input}} = (5 \times 6 \times 10) + (5 \times 6 \times 15) + (5 \times 6 \times 6) + (10 \times 4) = 970$ continuous scalar features.
+$$\mathbf{v}_{\text{obs}} = \text{Concat}\left( \text{Flatten}(\mathbf{R}_{\text{avail}}), \text{Flatten}(\mathbf{F}_{\text{avail}}), \text{Flatten}(\mathbf{B}_{\text{schedule}}), \text{Flatten}(\mathbf{E}_{\text{hardware}}) \right) \in \mathbb{R}^{970}$$
+
+#### Mathematical Breakdown of the 970-Dimensional Vector:
+- **Room Availability Tensor ($\mathbf{R}_{\text{avail}}$)**: $5 \text{ days} \times 6 \text{ slots} \times 10 \text{ rooms} = 300 \text{ features}$
+- **Faculty Availability Tensor ($\mathbf{F}_{\text{avail}}$)**: $5 \text{ days} \times 6 \text{ slots} \times 15 \text{ faculty} = 450 \text{ features}$
+- **Student Batch Matrix ($\mathbf{B}_{\text{schedule}}$)**: $5 \text{ days} \times 6 \text{ slots} \times 6 \text{ batches} = 180 \text{ features}$
+- **Equipment Feature Flags ($\mathbf{E}_{\text{hardware}}$)**: $10 \text{ rooms} \times 4 \text{ hardware specs} = 40 \text{ features}$
+- **Total Vector Dimension**: $300 + 450 + 180 + 40 = 970 \text{ continuous features}$.
 
 ### 2.2 Action Space
 An action $a_t \in \mathcal{A}$ corresponds to binding a course assignment tuple:
@@ -76,13 +82,13 @@ $$R(s_t, a_t) = -\left( w_{\text{hard}} \cdot C_{\text{clash}} + w_{\text{worklo
 
 ---
 
-## 3. PPO Policy Training & Algorithm Rationale
+## 3. PPO Policy Training & Algorithm Selection Rationale
 
 ### 3.1 Why Proximal Policy Optimization (PPO)?
 PPO was selected over Deep Q-Networks (DQN) and Advantage Actor-Critic (A2C) for three critical reasons:
-1. **Clipped Surrogate Objective**: PPO's clipped objective prevents destabilizingly large policy updates when navigating complex constraint boundaries.
-2. **High-Dimensional Discrete Action Spaces**: PPO handles discrete multi-discrete action spaces efficiently without Q-value overestimation issues.
-3. **Sample Efficiency & Stability**: PPO provides smooth convergence curves when optimizing multi-objective reward vectors.
+1. **Combinatorial Action Space vs DQN**: DQN struggles with large multi-discrete combinatorial action spaces due to $Q$-value maximization overhead.
+2. **Clipped Surrogate Objective**: PPO's clipped objective prevents destabilizingly large policy updates when navigating strict constraint boundaries.
+3. **Sample Efficiency & Convergence**: PPO provides smooth convergence curves when optimizing multi-objective reward vectors.
 
 ### 3.2 Training vs Online Inference
 - **Training (Offline)**: Stable-Baselines3 (v2.9.0) with PyTorch (v2.1.2) over 50,000 steps, serialized to `backend/app/rl/ppo_v1.zip` (191,211 bytes).
@@ -92,7 +98,10 @@ PPO was selected over Deep Q-Networks (DQN) and Advantage Actor-Critic (A2C) for
 
 ## 4. Empirical Benchmarking & Experimental Results
 
-To quantitatively measure performance, CampusFlow AI was benchmarked against 3 baseline algorithms across 100 evaluation runs on the institutional AURO dataset:
+### 4.1 Benchmark Evaluation Methodology
+To quantitatively measure performance, CampusFlow AI was benchmarked against 3 baseline algorithms across **100 evaluation runs** using the AURO Institutional Benchmark Suite (30 courses, 10 rooms, 15 faculty). Latency benchmarks were recorded on an Intel Core i7 12-thread host machine with 16GB RAM running Python 3.11.
+
+### 4.2 Benchmark Results Comparison
 
 | Solver Algorithm | Reward Score | Hard Conflicts | Space Utilization | Inference Latency | Benchmark Status |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -112,19 +121,31 @@ CampusFlow AI incorporates enterprise MLOps capabilities:
 
 ---
 
-## 6. Current System Boundaries & Future Roadmap
+## 6. System Boundaries & Roadmap Capability Matrix
 
-### 6.1 Current System Boundaries
-- **Single-Agent MDP**: Formulated as a single-agent MDP; multi-agent coordination is approximated via state vectorization.
-- **Pre-Trained Inference**: Web optimization relies on pre-trained PyTorch binaries (`ppo_v1.zip`) rather than real-time GPU retraining per request.
+### 6.1 Capability Matrix
 
-### 6.2 Strategic Roadmap
-1. **Hybrid PPO + Local Search Repair**: Combining PPO policy rollouts with deterministic constraint repair.
-2. **Progressive Curriculum Learning**: 3-stage progressive problem scaling (10 ➔ 20 ➔ 40 courses).
-3. **Local Ollama Integration**: Streaming DeepSeek-R1 responses via `localhost:11434`.
+| Capability | Current Status | Notes & Specifications |
+| :--- | :---: | :--- |
+| **PPO Policy Training** | ✅ Implemented | Stable-Baselines3 + PyTorch 50k episode offline training |
+| **Online Policy Inference** | ✅ Implemented | Sub-second FastAPI web rollout (~482 ms) |
+| **MLOps Experiment Tracking** | ✅ Implemented | Hashes, latency, audit logging, JSON exports, rollback |
+| **Model Registry & Guard** | ✅ Implemented | Validated disk binary presence check (`ppo_v1.zip`) |
+| **Curriculum Learning** | 🚧 Planned | 3-stage progressive dataset scaling (10 ➔ 20 ➔ 40 courses) |
+| **Hybrid Optimizer Repair** | 🚧 Planned | PPO candidate rollouts + NetworkX local search repair |
+| **Graph State Policy (PyG)** | 📋 Research | Heterogeneous campus graph state network prototype |
+| **Online Real-Time Learning**| 📋 Future Work | Continuous streaming feedback policy fine-tuning |
 
 ---
 
-## 7. Conclusion
+## 7. Threats to Validity & System Limitations
+
+1. **Synthetic & Demo Dataset Evaluation**: Benchmarks were conducted on AURO institutional demo datasets (30 courses). Generalization across massive universities (>500 courses) requires progressive curriculum training.
+2. **Hand-Tuned Multi-Objective Reward Weights**: Penalty multipliers ($w_{\text{hard}}=10$, $w_{\text{workload}}=8$) were manually configured. Inverse Reinforcement Learning (IRL) could learn these from expert human schedules.
+3. **Single-Agent MDP Formulation**: The environment models scheduling as a centralized single-agent process rather than multi-agent decentralized negotiation.
+
+---
+
+## 8. Conclusion
 
 CampusFlow AI demonstrates that modern AI university scheduling is best solved not by isolated algorithms, but by a cohesive **Campus Operations Platform** combining Gym/PPO reinforcement learning, interactive strategy tuning, automated verification, and MLOps experiment tracking.
