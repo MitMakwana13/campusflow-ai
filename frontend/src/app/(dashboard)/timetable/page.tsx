@@ -24,7 +24,8 @@ import {
   Sliders,
   History,
   Box,
-  Wrench
+  Wrench,
+  Upload
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OperationsActionModal } from "@/components/operations/OperationsActionModal";
@@ -32,6 +33,7 @@ import { ConstraintTunerModal } from "@/components/operations/ConstraintTunerMod
 import { OptimizationHistoryModal, OptimizationRunRecord } from "@/components/operations/OptimizationHistoryModal";
 import { ModelRegistryModal, ModelCheckpointRecord } from "@/components/operations/ModelRegistryModal";
 import { HybridOptimizerModal } from "@/components/operations/HybridOptimizerModal";
+import { InstitutionalDataUploadModal } from "@/components/operations/InstitutionalDataUploadModal";
 
 export default function TimetablePage() {
   const [isOptimized, setIsOptimized] = useState(false);
@@ -47,7 +49,9 @@ export default function TimetablePage() {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showModelRegistryModal, setShowModelRegistryModal] = useState(false);
   const [showHybridModal, setShowHybridModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [activeModel, setActiveModel] = useState<string>("ppo_v1.zip (v1.4.2)");
+  const [activeDatasetName, setActiveDatasetName] = useState<string>("AURO Demo Dataset (30 Courses)");
   const [lastOperationMessage, setLastOperationMessage] = useState<string | null>(null);
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<any[]>([]);
 
@@ -173,6 +177,14 @@ export default function TimetablePage() {
             </button>
           </div>
           
+          <button 
+            onClick={() => setShowUploadModal(true)} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-xs text-blue-300 font-mono transition-all"
+          >
+            <Upload className="w-4 h-4 text-blue-400" />
+            <span>Import Data (CSV)</span>
+          </button>
+
           <button 
             onClick={() => setShowHybridModal(true)} 
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-xs text-purple-300 font-mono transition-all"
@@ -500,6 +512,17 @@ export default function TimetablePage() {
         onClose={() => setShowHybridModal(false)}
         onApplyHybridSchedule={(result) => {
           setLastOperationMessage(`Applied Hybrid PPO + Hill-Climbing Repair schedule (+${result.repairRewardDelta} pts repair boost, ${result.finalConflicts} clashes)`);
+          handleOptimize();
+        }}
+      />
+
+      {/* Institutional Data Upload Modal */}
+      <InstitutionalDataUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onDatasetLoaded={(summary) => {
+          setActiveDatasetName(summary.institutionName);
+          setLastOperationMessage(`Loaded ${summary.institutionName}: ${summary.coursesCount} courses, ${summary.roomsCount} rooms, ${summary.facultyCount} faculty (${summary.status})`);
           handleOptimize();
         }}
       />
