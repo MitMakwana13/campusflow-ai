@@ -1,5 +1,5 @@
 """
-CampusFlow AI v2.0 — Ollama Local LLM Provider Implementation
+CampusFlow AI v2.0 — Stateless Async Ollama Provider Implementation
 """
 
 import json
@@ -16,18 +16,18 @@ class OllamaProvider(BaseAIProvider):
         payload = json.dumps({"model": self.model, "prompt": prompt, "stream": False}).encode("utf-8")
         req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
         try:
-            with urllib.request.urlopen(req, timeout=5) as response:
+            with urllib.request.urlopen(req, timeout=3) as response:
                 res = json.loads(response.read().decode("utf-8"))
                 return res.get("response", "")
         except Exception:
             return ""
 
-    def explain_optimization(self, run_data: dict) -> dict:
+    async def explain(self, context: dict) -> dict:
         prompt = (
             f"Explain why this PPO timetable optimization occurred in 80 words:\n"
-            f"Before Reward: {run_data.get('reward_before', -760)}, After Reward: {run_data.get('reward_after', 240)}\n"
-            f"Hard Conflicts Removed: {run_data.get('hard_conflicts_before', 1) - run_data.get('hard_conflicts_after', 0)}\n"
-            f"Utilization: {run_data.get('utilization_before', 0.68)*100}% -> {run_data.get('utilization_after', 0.92)*100}%"
+            f"Before Reward: {context.get('reward_before', -760)}, After Reward: {context.get('reward_after', 240)}\n"
+            f"Hard Conflicts Removed: {context.get('hard_conflicts_before', 1) - context.get('hard_conflicts_after', 0)}\n"
+            f"Utilization: {context.get('utilization_before', 0.68)*100}% -> {context.get('utilization_after', 0.92)*100}%"
         )
         llm_response = self._query_ollama(prompt)
         
@@ -44,26 +44,32 @@ class OllamaProvider(BaseAIProvider):
             "provider": f"Ollama ({self.model})"
         }
 
-    def parse_nl_query(self, query_text: str) -> dict:
-        q_lower = query_text.lower()
+    async def query(self, question: str) -> dict:
+        q_lower = question.lower()
         if "free" in q_lower or "empty" in q_lower:
             intent = "find_free_rooms"
+            filters = {"status": "available", "room_type": "all"}
         elif "faculty" in q_lower or "overload" in q_lower:
             intent = "check_faculty_workload"
+            filters = {"max_hours_exceeded": True}
         else:
             intent = "search_courses"
+            filters = {"keyword": question}
 
         return {
-            "originalQuery": query_text,
-            "structuredIntent": intent,
+            "originalQuery": question,
+            "structuredIntent": {
+                "intent": intent,
+                "filters": filters
+            },
             "provider": f"Ollama ({self.model})"
         }
 
-    def generate_executive_report(self, summary_metrics: dict) -> str:
+    async def report(self, data: dict) -> str:
         return (
             f"# Executive Campus Operating Report\n\n"
             f"- **System Status**: Optimal (0 Hard Conflicts)\n"
-            f"- **PPO Optimization Score**: {summary_metrics.get('reward_after', 240)} pts\n"
-            f"- **Campus Room Utilization**: {summary_metrics.get('utilization_after', 0.92)*100}%\n"
+            f"- **PPO Optimization Score**: {data.get('reward_after', 240)} pts\n"
+            f"- **Campus Room Utilization**: {data.get('utilization_after', 0.92)*100}%\n"
             f"- **Faculty Satisfaction Index**: 9.4/10\n"
         )

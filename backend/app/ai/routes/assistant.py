@@ -1,9 +1,9 @@
 """
-CampusFlow AI v2.0 — AI Campus Copilot FastAPI Routes
-Exposes explainability, natural language query parsing, and executive report endpoints.
+CampusFlow AI v2.0 — AI Campus Copilot FastAPI Async Routes
+Exposes explainability, structured query parsing, and executive report endpoints.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from pydantic import BaseModel
 from backend.app.ai.providers.factory import get_ai_provider
 
@@ -21,17 +21,17 @@ class QueryRequest(BaseModel):
     query: str
 
 @router.post("/explain")
-def explain_optimization(req: ExplainRequest):
+async def explain_optimization(req: ExplainRequest):
     provider = get_ai_provider()
-    return provider.explain_optimization(req.model_dump())
+    return await provider.explain(req.model_dump())
 
 @router.post("/query")
-def parse_natural_language_query(req: QueryRequest):
+async def parse_natural_language_query(req: QueryRequest):
     provider = get_ai_provider()
-    return provider.parse_nl_query(req.query)
+    return await provider.query(req.query)
 
 @router.post("/report")
-def generate_report(req: ExplainRequest):
+async def generate_report(req: ExplainRequest):
     provider = get_ai_provider()
-    report_md = provider.generate_executive_report(req.model_dump())
+    report_md = await provider.report(req.model_dump())
     return {"markdownReport": report_md, "provider": "CampusFlow AI v2.0 Copilot"}
