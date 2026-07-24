@@ -1,6 +1,6 @@
 """
 CampusFlow AI v2.0 — Stateless Async Ollama Provider Implementation
-Supports versioned intent schemas and confidence scoring.
+Supports versioned intent schemas, confidence scoring, and enhanced intent taxonomy matching.
 """
 
 import json
@@ -42,23 +42,32 @@ class OllamaProvider(BaseAIProvider):
         return {
             "summary": "PPO Optimization Decision Explanation",
             "explanation": llm_response,
-            "provider": f"Ollama ({self.model})"
+            "provider": "ollama",
+            "model": self.model
         }
 
     async def query(self, question: str) -> dict:
         q_lower = question.lower()
         missing = []
 
-        if "free" in q_lower or "empty" in q_lower:
+        if any(w in q_lower for w in ["free", "empty", "vacant", "unbooked", "available", "practical"]):
             intent = "find_free_rooms"
             filters = {"status": "available", "room_type": "lab" if "lab" in q_lower else "all"}
             if not any(day in q_lower for day in ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]):
                 missing.append("day")
             confidence = 0.95 if not missing else 0.75
-        elif "faculty" in q_lower or "overload" in q_lower:
+        elif any(w in q_lower for w in ["faculty", "overload", "professor", "professors", "staff", "extra hours"]):
             intent = "find_overloaded_faculty"
             filters = {"max_hours_exceeded": True}
             confidence = 0.92
+        elif any(w in q_lower for w in ["explain", "why", "changed", "moved"]):
+            intent = "explain_optimization"
+            filters = {"target": "room_change"}
+            confidence = 0.94
+        elif any(w in q_lower for w in ["report", "summary", "produce"]):
+            intent = "generate_report"
+            filters = {"format": "executive_markdown"}
+            confidence = 0.91
         else:
             intent = "find_course_schedule"
             filters = {"keyword": question}
@@ -71,7 +80,8 @@ class OllamaProvider(BaseAIProvider):
             "confidence": confidence,
             "filters": filters,
             "missingParameters": missing,
-            "provider": f"Ollama ({self.model})"
+            "provider": "ollama",
+            "model": self.model
         }
 
     async def report(self, data: dict) -> str:
