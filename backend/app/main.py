@@ -34,6 +34,12 @@ if FASTAPI_AVAILABLE:
         allow_headers=["*"],
     )
 
+    try:
+        from backend.app.ai.routes.assistant import router as assistant_router
+        app.include_router(assistant_router)
+    except Exception as e:
+        print(f"[!] Info: AI Copilot v2.0 module optional load: {e}")
+
     @app.get("/api/v1/health")
     def health_check():
         conn = get_db_connection()
