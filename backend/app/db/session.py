@@ -7,11 +7,9 @@ def get_db_connection():
     db_url = os.getenv("DATABASE_URL")
     if db_url and (db_url.startswith("postgres://") or db_url.startswith("postgresql://")):
         import psycopg2
-        from psycopg2.extras import RealDictCursor
-        # Handle postgresql:// schema for psycopg2
         if db_url.startswith("postgres://"):
             db_url = db_url.replace("postgres://", "postgresql://", 1)
-        conn = psycopg2.connect(db_url, cursor_factory=RealDictCursor)
+        conn = psycopg2.connect(db_url)
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS rooms (
@@ -33,6 +31,20 @@ def get_db_connection():
             );
         """)
         conn.commit()
+        
+        cursor.execute("SELECT COUNT(*) FROM rooms")
+        res = cursor.fetchone()
+        cnt = res[0] if res else 0
+        if cnt == 0:
+            cursor.execute("""
+                INSERT INTO rooms (id, code, name, building, capacity, room_type) VALUES
+                ('r1', 'AB-101', 'Lecture Hall 101', 'Academic Building', 60, 'lecture'),
+                ('r2', 'AB-102', 'Lecture Hall 102', 'Academic Building', 60, 'lecture'),
+                ('r3', 'AB-201', 'Computer Lab A', 'Academic Building', 30, 'lab'),
+                ('r4', 'B-222', 'Semiconductor Lab', 'Building B', 25, 'lab'),
+                ('r5', 'AB-108', 'Multipurpose Room', 'Academic Building', 45, 'seminar');
+            """)
+            conn.commit()
         return conn
     else:
         conn = sqlite3.connect(DB_PATH)
