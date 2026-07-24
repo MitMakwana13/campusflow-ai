@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { GlowCard } from "@/components/ui/spotlight-card";
+import { HeroInteractiveDemo } from "@/components/landing/HeroInteractiveDemo";
 
 export default function MarketingLandingPage() {
   return (
@@ -88,7 +89,7 @@ export default function MarketingLandingPage() {
         </p>
 
         {/* Action Buttons */}
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4 mb-16">
           <Link
             href={ROUTES.DASHBOARD}
             className="inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-2xl shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5"
@@ -106,6 +107,9 @@ export default function MarketingLandingPage() {
             <span>View 10/10 System Health</span>
           </Link>
         </div>
+
+        {/* Dynamic Framer Motion Simulation Terminal Demo */}
+        <HeroInteractiveDemo />
 
       </section>
 
