@@ -323,33 +323,4 @@ if FASTAPI_AVAILABLE:
     def get_constraints_tool():
         from backend.app.ai.tools import SchedulingTools
         return SchedulingTools.get_constraint_summary()
-        try:
-            from backend.app.ai import chat as ollama_chat, ContextBuilder, build_optimization_explanation_prompt, DecisionExplainer
-            
-            context_json = ContextBuilder.build_context()
-            prompt = build_optimization_explanation_prompt(context_json, question)
-            
-            messages = [
-                {"role": "system", "content": "You are CampusFlow AI Scheduling Analyst. Answer grounded strictly in evidence."},
-                {"role": "user", "content": prompt}
-            ]
-            
-            response_text = ollama_chat(messages, model="deepseek-r1:8b")
-            if not response_text or "unavailable" in response_text:
-                exp = DecisionExplainer.generate_explanation("API Chat Query", {})
-                response_text = "⚠ Local Ollama is unavailable (http://localhost:11434).\n\n" + "\n".join(exp["narrative"])
-                
-            return {
-                "status": "success",
-                "question": question,
-                "answer": response_text,
-                "contextGrounded": True
-            }
-        except Exception as e:
-            return {
-                "status": "fallback",
-                "question": question,
-                "answer": f"⚠ Local Ollama is unavailable. Grounded trace fallback:\n- Resolved 1 clash via 2 repair swaps.\n- Total reward: +360.6 pts (Latency: 510 ms).",
-                "contextGrounded": True
-            }
 
