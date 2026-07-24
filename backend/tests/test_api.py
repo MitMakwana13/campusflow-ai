@@ -100,6 +100,15 @@ def test_marl_optimize_endpoint():
     assert data["result"]["mode"] == "Faculty Friendly"
     print("[API TEST PASS] POST /api/v1/optimizer/marl-optimize passed OK.")
 
+def test_pareto_matrix_endpoint():
+    res = client.get("/api/v1/optimizer/pareto-matrix")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert isinstance(data["pareto_matrix"], list)
+    assert len(data["pareto_matrix"]) == 4
+    print("[API TEST PASS] GET /api/v1/optimizer/pareto-matrix passed OK.")
+
 if __name__ == "__main__":
     test_health_endpoint()
     test_auth_login_endpoint()
@@ -110,4 +119,5 @@ if __name__ == "__main__":
     test_ai_chat_endpoint()
     test_ai_tools_endpoints()
     test_marl_optimize_endpoint()
+    test_pareto_matrix_endpoint()
     print("\n[ALL REST API CONTRACT TESTS PASSED SUCCESSFULLY]")

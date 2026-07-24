@@ -326,13 +326,21 @@ if FASTAPI_AVAILABLE:
 
     @app.post("/api/v1/optimizer/marl-optimize")
     def marl_optimize(payload: dict):
-        from backend.app.optimizer.marl import MultiAgentCoordinator
+        from backend.app.optimizer.marl import MultiAgentCoordinationEngine
         mode = payload.get("objective_mode", "Balanced")
         pinned = payload.get("pinned_constraints", [])
-        result = MultiAgentCoordinator.optimize_with_agents([], objective_mode=mode, pinned_constraints=pinned)
+        result = MultiAgentCoordinationEngine.optimize_with_coordination([], objective_mode=mode, pinned_constraints=pinned)
         return {
             "status": "success",
-            "optimization_id": f"OPT-MARL-{datetime.utcnow().strftime('%M%S')}",
+            "optimization_id": f"OPT-MAC-{datetime.utcnow().strftime('%M%S')}",
             "result": result
+        }
+
+    @app.get("/api/v1/optimizer/pareto-matrix")
+    def get_pareto_matrix():
+        from backend.app.optimizer.marl import MultiAgentCoordinationEngine
+        return {
+            "status": "success",
+            "pareto_matrix": MultiAgentCoordinationEngine.get_pareto_tradeoff_matrix()
         }
 
