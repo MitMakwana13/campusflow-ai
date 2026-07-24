@@ -88,13 +88,13 @@ async def run_ai_evaluation():
         print(f"{exp:<25} | {pred:<25} | {cnt}")
 
     # 2. Display Multi-Provider Benchmark Matrix Comparison
-    print("\nProvider Benchmark Comparison Matrix:")
+    print("\nProvider Benchmark Comparison Matrix (Simulated Benchmark Baseline):")
     print("-" * 65)
     print(f"{'Provider':<15} | {'Model':<15} | {'Accuracy':<10} | {'Avg Latency'}")
     print("-" * 65)
-    print(f"{'ollama':<15} | {'llama3.2':<15} | {f'{accuracy}%':<10} | {avg_latency}ms (Local)")
-    print(f"{'openai':<15} | {'gpt-4o-mini':<15} | {'98.0%':<10} | 185.0ms (Cloud)")
-    print(f"{'glm':<15} | {'glm-5.2':<15} | {'96.5%':<10} | 142.0ms (Serverless)")
+    print(f"{'ollama':<15} | {'llama3.2':<15} | {f'{accuracy}%':<10} | {avg_latency}ms (Local Rule-Engine)")
+    print(f"{'openai':<15} | {'gpt-4o-mini':<15} | {'98.0%':<10} | 185.0ms (Cloud API Estimate)")
+    print(f"{'glm':<15} | {'glm-5.2':<15} | {'96.5%':<10} | 142.0ms (Serverless Estimate)")
     print("-" * 65 + "\n")
 
     return accuracy >= 90.0
