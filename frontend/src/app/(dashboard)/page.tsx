@@ -85,7 +85,7 @@ export default function MarketingLandingPage() {
         </h1>
 
         <p className="mt-8 text-zinc-400 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
-          Optimize institutional schedules using <strong className="text-zinc-200">Stable-Baselines3 PPO</strong>. Understand space allocation decisions with a versioned <strong className="text-zinc-200">AI Copilot</strong>.
+          AI-Powered University Scheduling Platform driven by <strong className="text-zinc-200">Stable-Baselines3 PPO</strong> and natural language intent explainability.
         </p>
 
         {/* Action Buttons */}
