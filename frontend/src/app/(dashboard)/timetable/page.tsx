@@ -20,10 +20,12 @@ import {
   BrainCircuit,
   Zap,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Sliders
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OperationsActionModal } from "@/components/operations/OperationsActionModal";
+import { ConstraintTunerModal } from "@/components/operations/ConstraintTunerModal";
 
 export default function TimetablePage() {
   const [isOptimized, setIsOptimized] = useState(false);
@@ -35,6 +37,7 @@ export default function TimetablePage() {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [showBenchmarkModal, setShowBenchmarkModal] = useState(false);
   const [showOperationsModal, setShowOperationsModal] = useState(false);
+  const [showConstraintModal, setShowConstraintModal] = useState(false);
   const [lastOperationMessage, setLastOperationMessage] = useState<string | null>(null);
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<any[]>([]);
 
@@ -116,6 +119,14 @@ export default function TimetablePage() {
             </button>
           </div>
           
+          <button 
+            onClick={() => setShowConstraintModal(true)} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-mono transition-all"
+          >
+            <Sliders className="w-4 h-4 text-emerald-400" />
+            <span>RL Weights</span>
+          </button>
+
           <button 
             onClick={() => setShowOperationsModal(true)} 
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-xs text-purple-300 font-mono transition-all"
@@ -364,6 +375,16 @@ export default function TimetablePage() {
         onClose={() => setShowOperationsModal(false)}
         onActionComplete={(type, details) => {
           setLastOperationMessage(`Operation logged [${type.toUpperCase()}]: ${details}`);
+          handleOptimize();
+        }}
+      />
+
+      {/* Constraint Tuner Modal */}
+      <ConstraintTunerModal 
+        isOpen={showConstraintModal}
+        onClose={() => setShowConstraintModal(false)}
+        onApplyWeights={(w) => {
+          setLastOperationMessage(`Gymnasium reward weights updated [Capacity:${w.roomCapacity}x, MaxHours:${w.facultyMaxHours}x]`);
           handleOptimize();
         }}
       />
