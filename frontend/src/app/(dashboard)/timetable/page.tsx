@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { TimetableGrid } from "@/components/domain/TimetableGrid";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { MetricCard } from "@/components/ui/MetricCard";
 import { AIExplanationPanel } from "@/features/optimization";
 import { timetableApi } from "@/lib/api/timetableApi";
 import { optimizationApi } from "@/lib/api/optimizationApi";
@@ -11,20 +9,26 @@ import { fastAPIOptimizationRepo, fastAPITimetableRepo } from "@/repositories/Fa
 import { TimetableSchedule } from "@/types/timetable";
 import { AIExplanation } from "@/types/optimization";
 import { 
-  Filter, 
   Wand2, 
   CheckCircle2, 
   AlertTriangle, 
   Activity, 
   ThumbsUp,
   BarChart3,
-  RotateCcw
+  RotateCcw,
+  Sparkles,
+  BrainCircuit,
+  Zap,
+  ArrowRight,
+  ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function TimetablePage() {
   const [isOptimized, setIsOptimized] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [optimizationStep, setOptimizationStep] = useState("");
   const [schedule, setSchedule] = useState<TimetableSchedule | null>(null);
   const [explanation, setExplanation] = useState<AIExplanation | null>(null);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
@@ -40,8 +44,21 @@ export default function TimetablePage() {
 
   const handleOptimize = async () => {
     setIsOptimizing(true);
+    setProgress(15);
+    setOptimizationStep("Initializing Gymnasium TimetableEnv observation space...");
+
+    await new Promise(r => setTimeout(r, 600));
+    setProgress(45);
+    setOptimizationStep("Executing SB3 PPO policy rollouts (ppo_v1.zip)...");
+
+    await new Promise(r => setTimeout(r, 700));
+    setProgress(80);
+    setOptimizationStep("Resolving hard room double-bookings & faculty constraints...");
+
     const result = await timetableApi.optimize();
     const exp = await optimizationApi.getLatestExplanation();
+    
+    setProgress(100);
     setSchedule(result);
     setExplanation(exp);
     setIsOptimizing(false);
@@ -63,255 +80,248 @@ export default function TimetablePage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1400px] mx-auto">
+    <div className="space-y-8 max-w-[1400px] mx-auto pb-12 animate-in fade-in duration-500">
       
       {/* Header & Controls */}
-      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800/80 pb-6">
         <div>
-          <h1 className="text-3xl font-display font-bold text-neutral-50 tracking-tight">
-            Timetable Optimization System
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono mb-2">
+            <BrainCircuit className="w-3.5 h-3.5 text-indigo-400" />
+            <span>PPO Neural Scheduler Engine</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+            Schedule Synthesis Terminal
           </h1>
-          <p className="text-neutral-400 mt-2">
-            AURO University School of Information Technology (Odd Semester 2026)
+          <p className="text-zinc-400 text-sm mt-1">
+            AURO University School of Information Technology • Odd Semester 2026
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-surface-2 border border-white/10 rounded-lg p-1">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 rounded-xl p-1">
             <button 
               onClick={() => setIsOptimized(false)}
-              className={cn("px-4 py-1.5 rounded-md text-sm font-medium transition-colors", !isOptimized ? "bg-surface-3 text-white shadow" : "text-neutral-400 hover:text-white")}
+              className={cn("px-4 py-1.5 rounded-lg text-xs font-medium transition-all", !isOptimized ? "bg-zinc-800 text-white font-bold shadow" : "text-zinc-400 hover:text-white")}
             >
-              Manual View
+              Unoptimized View
             </button>
             <button 
               onClick={() => setIsOptimized(true)}
-              className={cn("px-4 py-1.5 rounded-md text-sm font-medium transition-colors", isOptimized ? "bg-primary-600 text-white shadow" : "text-neutral-400 hover:text-white")}
+              className={cn("px-4 py-1.5 rounded-lg text-xs font-medium transition-all", isOptimized ? "bg-indigo-600 text-white font-bold shadow-md shadow-indigo-500/20" : "text-zinc-400 hover:text-white")}
             >
-              Optimized View
+              PPO Optimized View
             </button>
           </div>
           
-          <button onClick={handleRunBenchmark} className="btn btn-secondary gap-1.5 text-xs">
-            <BarChart3 className="w-4 h-4 text-accent-400" />
-            Algorithm Benchmark
+          <button 
+            onClick={handleRunBenchmark} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-mono transition-all"
+          >
+            <BarChart3 className="w-4 h-4 text-indigo-400" />
+            <span>Algorithm Matrix</span>
           </button>
           
           {isOptimized ? (
-            <button onClick={handleRollback} className="btn btn-secondary text-xs text-danger-400 border-danger-500/20 hover:bg-danger-500/10">
-              <RotateCcw className="w-4 h-4 mr-1" />
-              Rollback
+            <button 
+              onClick={handleRollback} 
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-xs text-rose-400 font-mono transition-all"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Rollback</span>
             </button>
           ) : (
             <button 
               onClick={handleOptimize}
               disabled={isOptimizing}
-              className="btn btn-ai shadow-lg group relative overflow-hidden"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-xs shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50"
             >
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
               {isOptimizing ? (
-                <div className="flex items-center gap-2 relative z-10">
+                <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Running Optimization Engine...</span>
-                </div>
+                  <span>Optimizing...</span>
+                </>
               ) : (
-                <div className="flex items-center gap-2 relative z-10">
+                <>
                   <Wand2 className="w-4 h-4" />
-                  <span>Run Optimization</span>
-                </div>
+                  <span>Run PPO Optimizer</span>
+                </>
               )}
             </button>
           )}
         </div>
       </div>
 
-      {/* Comparison Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <MetricCard 
-          title="Hard Conflicts"
-          value={schedule ? schedule.hardConflictsCount : (isOptimized ? "0" : "12")}
-          trend={isOptimized ? { value: "100% resolved", isPositive: true } : { value: "Requires action", isPositive: false }}
-          icon={isOptimized ? CheckCircle2 : AlertTriangle}
-          className={cn("transition-colors duration-500", !isOptimized ? "border-danger-500/30 bg-danger-500/5" : "border-success-500/30 bg-success-500/5")}
-        />
-        <MetricCard 
-          title="Room Utilization"
-          value={schedule ? `${schedule.roomUtilizationPercent}%` : (isOptimized ? "92%" : "68%")}
-          trend={isOptimized ? { value: "+24%", isPositive: true } : undefined}
-          icon={Activity}
-          className="transition-colors duration-500"
-        />
-        <MetricCard 
-          title="Faculty Satisfaction"
-          value={schedule ? `${schedule.facultySatisfactionScore}/10` : (isOptimized ? "9.4/10" : "6.2/10")}
-          trend={isOptimized ? { value: "Preferences met", isPositive: true } : undefined}
-          icon={ThumbsUp}
-          className="transition-colors duration-500"
-        />
-      </div>
+      {/* Live Optimization Progress Bar */}
+      {isOptimizing && (
+        <div className="p-6 rounded-2xl bg-zinc-900/90 border border-indigo-500/30 space-y-3 animate-in fade-in duration-300">
+          <div className="flex items-center justify-between text-xs font-mono">
+            <span className="text-indigo-400 font-bold flex items-center gap-2">
+              <Zap className="w-4 h-4 animate-bounce" /> {optimizationStep}
+            </span>
+            <span className="text-white font-bold">{progress}%</span>
+          </div>
+          <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+            <div 
+              className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        
-        {/* Main Grid */}
-        <div className="xl:col-span-3">
-          <Card className="h-full border-white/10 bg-surface-1">
-            <CardHeader className="border-b border-white/5 pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  Weekly Schedule
-                </CardTitle>
-                <div className="flex items-center gap-4 text-xs text-neutral-400">
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary-500"></span> Lecture</span>
-                  <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-500"></span> Lab (2 hrs)</span>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <TimetableGrid isOptimized={isOptimized} />
-            </CardContent>
-          </Card>
+      {/* Comparison Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className={cn(
+          "p-6 rounded-2xl border backdrop-blur-md space-y-3 transition-all",
+          !isOptimized ? "bg-rose-500/5 border-rose-500/20" : "bg-emerald-500/5 border-emerald-500/20"
+        )}>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase">Hard Conflicts</span>
+            {isOptimized ? (
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            ) : (
+              <AlertTriangle className="w-5 h-5 text-rose-400" />
+            )}
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className={cn("text-3xl font-extrabold font-mono", !isOptimized ? "text-rose-400" : "text-emerald-400")}>
+              {schedule ? schedule.hardConflictsCount : (isOptimized ? "0" : "12")}
+            </span>
+            <span className="text-xs font-mono text-zinc-400">
+              {isOptimized ? "0 Clashes" : "Requires PPO action"}
+            </span>
+          </div>
+          <p className="text-xs text-zinc-400">
+            {isOptimized ? "All room and faculty double-bookings resolved." : "Conflict detected in Building B lab schedule."}
+          </p>
         </div>
 
-        {/* Sidebar panels */}
+        <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase">Space Utilization</span>
+            <Activity className="w-5 h-5 text-indigo-400" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-white font-mono">
+              {schedule ? `${schedule.roomUtilizationPercent}%` : (isOptimized ? "92%" : "68%")}
+            </span>
+            {isOptimized && <span className="text-xs font-mono text-emerald-400 font-bold">+24%</span>}
+          </div>
+          <p className="text-xs text-zinc-400">Capacity efficiency across all lecture halls and practical labs.</p>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 backdrop-blur-md space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase">Faculty Score</span>
+            <ThumbsUp className="w-5 h-5 text-purple-400" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-white font-mono">
+              {schedule ? `${schedule.facultySatisfactionScore}/10` : (isOptimized ? "9.4/10" : "6.2/10")}
+            </span>
+            {isOptimized && <span className="text-xs font-mono text-purple-400 font-bold">Optimal</span>}
+          </div>
+          <p className="text-xs text-zinc-400">Minimized back-to-back lectures and evening overhang.</p>
+        </div>
+      </div>
+
+      {/* Main Grid View */}
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+        
+        {/* Main Schedule Table (3 cols) */}
+        <div className="xl:col-span-3">
+          <div className="rounded-3xl border border-zinc-800/80 bg-zinc-900/40 overflow-hidden backdrop-blur-md">
+            <div className="p-6 border-b border-zinc-800/80 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="font-bold text-white text-base">Weekly Timetable Grid</span>
+                <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+                  {isOptimized ? "PPO Policy Applied" : "Unoptimized Baseline"}
+                </span>
+              </div>
+              <div className="flex items-center gap-4 text-xs font-mono text-zinc-400">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Lecture</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Lab (2 hrs)</span>
+              </div>
+            </div>
+            <div className="p-4">
+              <TimetableGrid isOptimized={isOptimized} />
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar Explanation Panel (1 col) */}
         <div className="xl:col-span-1 space-y-6">
-          
-          {/* AI Explanation Contract Panel */}
           {isOptimized && explanation && (
             <AIExplanationPanel 
               explanation={explanation}
-              onPublish={() => alert("Schedule published to production database.")}
+              onPublish={() => alert("Schedule published to production Supabase PostgreSQL database.")}
               onRollback={handleRollback}
             />
           )}
 
           {!isOptimized && (
-            <Card className="border-danger-500/20 bg-danger-500/5">
-              <CardHeader>
-                <CardTitle className="text-danger-400 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider">
-                  <AlertTriangle className="w-4 h-4" />
-                  Active Conflicts
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-3 bg-neutral-900 rounded-lg border border-danger-500/30">
-                  <div className="text-sm font-bold text-neutral-100 mb-1">Double Booking: B-222</div>
-                  <div className="text-xs text-neutral-400">Tuesday 11:05 AM</div>
-                  <div className="text-xs text-danger-300 mt-2">Dr. Thaker (IMBTTO306) and Ms. Chakrabarty (IIQATO301) are scheduled for the same room.</div>
-                </div>
-                
-                <div className="p-3 bg-neutral-900 rounded-lg border border-warning-500/30">
-                  <div className="text-sm font-bold text-neutral-100 mb-1">Back-to-Back Warning</div>
-                  <div className="text-xs text-neutral-400">Dr. Sunil Kumar</div>
-                  <div className="text-xs text-warning-300 mt-2">Scheduled for 4 consecutive lectures on Thursday.</div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+            <div className="p-6 rounded-3xl border border-rose-500/30 bg-rose-500/5 space-y-4">
+              <div className="flex items-center gap-2 text-rose-400 font-mono font-bold text-xs uppercase">
+                <AlertTriangle className="w-4 h-4" />
+                <span>Detected Hard Conflicts</span>
+              </div>
+              
+              <div className="p-3 bg-zinc-950 rounded-xl border border-rose-500/30 space-y-1">
+                <div className="text-xs font-bold text-white">Double Booking: Lab B-222</div>
+                <div className="text-[11px] font-mono text-zinc-400">Tuesday 11:05 AM</div>
+                <div className="text-xs text-rose-300 mt-2">Dr. Thaker (IMBTTO306) and Ms. Chakrabarty (IIQATO301) are assigned to the same space.</div>
+              </div>
 
+              <button 
+                onClick={handleOptimize}
+                className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-500/20"
+              >
+                Resolve with PPO Engine
+              </button>
+            </div>
+          )}
         </div>
+
       </div>
 
-      {/* Optimization Complete Modal */}
-      {showSummaryModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-neutral-900 border border-emerald-500/30 rounded-2xl p-6 max-w-lg w-full space-y-6 shadow-2xl">
-            <div className="flex items-center gap-3 text-emerald-400">
-              <CheckCircle2 className="w-8 h-8 flex-shrink-0" />
-              <div>
-                <h3 className="text-xl font-bold text-neutral-100">Optimization Complete</h3>
-                <p className="text-xs text-neutral-400">PPO RL Engine executed on AURO dataset</p>
-              </div>
-            </div>
-
-            <div className="bg-neutral-950 p-4 rounded-xl border border-white/10 space-y-3">
-              <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Before vs After Performance</div>
-              
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-neutral-900 p-3 rounded-lg border border-white/5">
-                  <div className="text-xs text-neutral-400">Hard Conflicts</div>
-                  <div className="text-lg font-bold text-danger-400 line-through">1 Clash</div>
-                  <div className="text-xl font-bold text-emerald-400">0 Clashes</div>
-                </div>
-
-                <div className="bg-neutral-900 p-3 rounded-lg border border-white/5">
-                  <div className="text-xs text-neutral-400">Total Reward</div>
-                  <div className="text-lg font-bold text-danger-400">-760 pts</div>
-                  <div className="text-xl font-bold text-emerald-400">+240 pts</div>
-                </div>
-
-                <div className="bg-neutral-900 p-3 rounded-lg border border-white/5">
-                  <div className="text-xs text-neutral-400">Room Utilization</div>
-                  <div className="text-lg font-bold text-neutral-400">68%</div>
-                  <div className="text-xl font-bold text-emerald-400">92% (+24%)</div>
-                </div>
-
-                <div className="bg-neutral-900 p-3 rounded-lg border border-white/5">
-                  <div className="text-xs text-neutral-400">Faculty Satisfaction</div>
-                  <div className="text-lg font-bold text-neutral-400">6.2 / 10</div>
-                  <div className="text-xl font-bold text-emerald-400">9.4 / 10</div>
-                </div>
-              </div>
-            </div>
-
-            <button 
-              onClick={() => setShowSummaryModal(false)}
-              className="w-full btn btn-primary justify-center shadow-lg py-2.5"
-            >
-              Explore Optimized Timetable
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Multi-Algorithm Benchmark Modal */}
+      {/* Benchmark Matrix Modal */}
       {showBenchmarkModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-neutral-900 border border-primary-500/30 rounded-2xl p-6 max-w-3xl w-full space-y-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div className="flex items-center gap-3 text-primary-400">
-                <BarChart3 className="w-7 h-7 flex-shrink-0" />
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-3xl w-full space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+              <div className="flex items-center gap-3 text-indigo-400">
+                <BarChart3 className="w-6 h-6" />
                 <div>
-                  <h3 className="text-xl font-bold text-neutral-100">Multi-Algorithm Benchmark Suite</h3>
-                  <p className="text-xs text-neutral-400">Side-by-side performance evaluation across solver algorithms</p>
+                  <h3 className="text-lg font-bold text-white">Solver Algorithm Benchmark Matrix</h3>
+                  <p className="text-xs text-zinc-400">Comparative evaluation across Gymnasium solvers</p>
                 </div>
               </div>
-              <button onClick={() => setShowBenchmarkModal(false)} className="text-neutral-400 hover:text-white">✕</button>
+              <button onClick={() => setShowBenchmarkModal(false)} className="text-zinc-400 hover:text-white">✕</button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-neutral-300">
-                <thead className="bg-neutral-950 text-xs uppercase text-neutral-400">
+            <div className="overflow-x-auto font-mono text-xs">
+              <table className="w-full text-left text-zinc-300">
+                <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800">
                   <tr>
                     <th className="p-3">Algorithm</th>
                     <th className="p-3">Exec Time</th>
-                    <th className="p-3">Reward</th>
+                    <th className="p-3">Reward Score</th>
                     <th className="p-3">Hard Conflicts</th>
-                    <th className="p-3">Utilization</th>
                     <th className="p-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-zinc-800/60">
                   {benchmarkMatrix.map((item, idx) => (
-                    <tr key={idx} className={item.algorithm.includes('PPO') ? 'bg-primary-950/40 font-semibold' : ''}>
-                      <td className="p-3 font-mono">{item.algorithm}</td>
-                      <td className="p-3 font-mono text-neutral-400">{item.execution_time_seconds}s</td>
-                      <td className="p-3 font-mono text-emerald-400">{item.reward_score} pts</td>
-                      <td className="p-3 font-mono">{item.hard_conflicts_count === 0 ? <span className="text-emerald-400">0</span> : <span className="text-danger-400">{item.hard_conflicts_count}</span>}</td>
-                      <td className="p-3 font-mono text-accent-300">{item.room_utilization_percent}%</td>
-                      <td className="p-3 text-xs"><span className="px-2 py-0.5 rounded bg-surface-3">{item.status}</span></td>
+                    <tr key={idx} className={item.algorithm.includes('PPO') ? 'bg-indigo-500/10 font-bold text-white' : ''}>
+                      <td className="p-3">{item.algorithm}</td>
+                      <td className="p-3 text-zinc-400">{item.execution_time_seconds}s</td>
+                      <td className="p-3 text-emerald-400">{item.reward_score} pts</td>
+                      <td className="p-3">{item.hard_conflicts_count === 0 ? <span className="text-emerald-400">0</span> : <span className="text-rose-400">{item.hard_conflicts_count}</span>}</td>
+                      <td className="p-3"><span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">{item.status}</span></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-
-            <div className="flex justify-end">
-              <button 
-                onClick={() => setShowBenchmarkModal(false)}
-                className="btn btn-secondary"
-              >
-                Close Benchmark Matrix
-              </button>
             </div>
           </div>
         </div>

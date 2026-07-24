@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-07-24T22:13:27.353673",
+  "timestamp": "2026-07-24T22:18:33.032743",
   "dataset": "AURO University School of IT",
-  "trainingTimesteps": 1000,
-  "executionTimeSeconds": 2.83,
+  "trainingTimesteps": 1280,
+  "executionTimeSeconds": 7.58,
   "benchmarkMatrix": [
     {
       "algorithm": "Manual Schedule (Baseline)",
