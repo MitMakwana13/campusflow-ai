@@ -4,6 +4,7 @@
 
 [![CampusFlow AI System Verification CI](https://github.com/MitMakwana13/campusflow-ai/actions/workflows/verify.yml/badge.svg)](https://github.com/MitMakwana13/campusflow-ai/actions/workflows/verify.yml)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-success?style=flat&logo=vercel)](https://campusflow-ai-liart.vercel.app/)
+[![API Status](https://img.shields.io/badge/API%20Status-Render%20Healthy-009688?style=flat&logo=render)](https://campusflow-ai-8j05.onrender.com/api/v1/health)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Framework: Next.js 15](https://img.shields.io/badge/Frontend-Next.js%2015-black)](https://nextjs.org/)
 [![Backend: FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688)](https://fastapi.tiangolo.com/)
