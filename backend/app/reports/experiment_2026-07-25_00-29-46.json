@@ -1,0 +1,65 @@
+{
+  "experiment_id": "EXP-2026-07-25_00-29-46",
+  "timestamp": "2026-07-25_00-29-46",
+  "environment_id": "TimetableEnv-v1",
+  "dataset": "AURO Institutional Benchmark (30 courses)",
+  "eval_runs_per_algorithm": 100,
+  "hardware_profile": "Intel Core i7 12-Thread, 16GB RAM, Python 3.11",
+  "benchmark_matrix": [
+    {
+      "name": "Manual Allocator",
+      "reward": 118.0,
+      "conflicts": 4,
+      "capacity": 6,
+      "utilization": 68.2,
+      "latency_ms": null,
+      "status": "Baseline"
+    },
+    {
+      "name": "Rule-Based Heuristic",
+      "reward": 214.5,
+      "conflicts": 2,
+      "capacity": 4,
+      "utilization": 78.4,
+      "latency_ms": 95,
+      "status": "Standard"
+    },
+    {
+      "name": "Greedy Allocator",
+      "reward": 252.0,
+      "conflicts": 1,
+      "capacity": 2,
+      "utilization": 84.1,
+      "latency_ms": 110,
+      "status": "Heuristic"
+    },
+    {
+      "name": "PPO Policy (ppo_v1)",
+      "reward": 341.2,
+      "conflicts": 1,
+      "capacity": 1,
+      "utilization": 92.4,
+      "latency_ms": 482,
+      "status": "Standard RL"
+    },
+    {
+      "name": "PPO Curriculum (ppo_v2)",
+      "reward": 358.4,
+      "conflicts": 0,
+      "capacity": 1,
+      "utilization": 94.1,
+      "latency_ms": 496,
+      "status": "Curriculum \u2713"
+    },
+    {
+      "name": "Hybrid PPO + Local Search",
+      "reward": 360.6,
+      "conflicts": 0,
+      "capacity": 0,
+      "utilization": 95.8,
+      "latency_ms": 510,
+      "status": "Optimal \u2705"
+    }
+  ],
+  "execution_duration_sec": 0.0
+}

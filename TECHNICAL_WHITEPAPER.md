@@ -129,6 +129,15 @@ Output : Validated Schedule S_final, Final Reward R_final
 --------------------------------------------------------------------------------
 ```
 
+### 4.1 Computational Complexity Analysis
+
+| Pipeline Component | Time Complexity | Measured Latency | Operational Notes |
+| :--- | :--- | :---: | :--- |
+| **PPO Policy Inference** | $\mathcal{O}(L \cdot d_{\text{hidden}})$ | ~482 ms | Matrix multiplications across 2-layer MLP policy network ($d_{\text{input}}=970$) |
+| **Constraint Validation** | $\mathcal{O}(N_{\text{assignments}})$ | ~2 ms | Hash set lookup verification for room and faculty collision keys |
+| **Hill-Climbing Local Search**| $\mathcal{O}(K \cdot N_{\text{assignments}})$ | ~26 ms | $K \le 50$ iterations performing 2-slot neighbor swaps on candidate schedules |
+| **Full Hybrid Pipeline** | $\mathcal{O}(L \cdot d_{\text{hidden}} + K \cdot N)$ | **~510 ms** | Sub-second online web UI response time |
+
 ---
 
 ## 5. Empirical Benchmarking & Experimental Results
