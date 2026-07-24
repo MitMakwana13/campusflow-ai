@@ -64,30 +64,49 @@ if FASTAPI_AVAILABLE:
 
     @app.get("/api/v1/rooms")
     def get_rooms():
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM rooms")
-        rows = cursor.fetchall()
-        conn.close()
-        return [dict(r) for r in rows]
+        from backend.app.db.repository import RoomRepository
+        return RoomRepository.get_all()
+
+    @app.post("/api/v1/rooms")
+    def create_room(payload: dict):
+        from backend.app.db.repository import RoomRepository
+        return RoomRepository.create(
+            code=payload.get("code", "R-100"),
+            name=payload.get("name", "New Room"),
+            building=payload.get("building", "Academic Block"),
+            capacity=payload.get("capacity", 30),
+            is_lab=payload.get("is_lab", False)
+        )
 
     @app.get("/api/v1/faculty")
     def get_faculty():
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM faculty")
-        rows = cursor.fetchall()
-        conn.close()
-        return [dict(r) for r in rows]
+        from backend.app.db.repository import FacultyRepository
+        return FacultyRepository.get_all()
+
+    @app.post("/api/v1/faculty")
+    def create_faculty(payload: dict):
+        from backend.app.db.repository import FacultyRepository
+        return FacultyRepository.create(
+            name=payload.get("name", "Dr. New Faculty"),
+            department=payload.get("department", "School of IT"),
+            max_hours=payload.get("max_workload_hours", 16)
+        )
 
     @app.get("/api/v1/courses")
     def get_courses():
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM courses")
-        rows = cursor.fetchall()
-        conn.close()
-        return [dict(r) for r in rows]
+        from backend.app.db.repository import CourseRepository
+        return CourseRepository.get_all()
+
+    @app.post("/api/v1/courses")
+    def create_course(payload: dict):
+        from backend.app.db.repository import CourseRepository
+        return CourseRepository.create(
+            code=payload.get("code", "CS-100"),
+            name=payload.get("name", "Intro to CS"),
+            department=payload.get("department", "School of IT"),
+            faculty_name=payload.get("faculty_name", "Dr. Sharma"),
+            students=payload.get("enrolled_students", 30)
+        )
 
     @app.get("/api/v1/timetable")
     def get_timetable(optimized: bool = False):
