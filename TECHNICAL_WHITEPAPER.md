@@ -129,14 +129,16 @@ Output : Validated Schedule S_final, Final Reward R_final
 --------------------------------------------------------------------------------
 ```
 
-### 4.1 Computational Complexity Analysis
+### 4.1 Measured Empirical Latency & Performance Breakdown
 
-| Pipeline Component | Time Complexity | Measured Latency | Operational Notes |
+Rather than relying purely on asymptotic notation, execution complexity across the optimization pipeline is benchmarked based on measured empirical latency profiles across 100 evaluation runs:
+
+| Pipeline Component | Dominant Cost Description | Measured Empirical Latency | Operational Impact |
 | :--- | :--- | :---: | :--- |
-| **PPO Policy Inference** | $\mathcal{O}(L \cdot d_{\text{hidden}})$ | ~482 ms | Matrix multiplications across 2-layer MLP policy network ($d_{\text{input}}=970$) |
-| **Constraint Validation** | $\mathcal{O}(N_{\text{assignments}})$ | ~2 ms | Hash set lookup verification for room and faculty collision keys |
-| **Hill-Climbing Local Search**| $\mathcal{O}(K \cdot N_{\text{assignments}})$ | ~26 ms | $K \le 50$ iterations performing 2-slot neighbor swaps on candidate schedules |
-| **Full Hybrid Pipeline** | $\mathcal{O}(L \cdot d_{\text{hidden}} + K \cdot N)$ | **~510 ms** | Sub-second online web UI response time |
+| **PPO Policy Forward Pass** | Matrix multiplications across 2-layer PyTorch MLP policy ($d_{\text{input}}=970$) | **~482 ms** | Primary computational cost; scales linearly with step rollouts |
+| **Constraint Validation** | Hash set lookup verification for room and faculty collision keys | **~2 ms** | Negligible overhead; instant runtime safety check |
+| **Hill-Climbing Local Search**| Deterministic 2-slot neighbor swaps performed over $K \le 50$ iterations | **~26 ms** | Fast local search repair phase ensuring 100% legal compliance |
+| **Full Hybrid Pipeline** | End-to-end PPO rollout + Hill-Climbing Repair + Validation | **~510 ms** | Sub-second online web UI response time |
 
 ---
 
