@@ -29,6 +29,7 @@ def main():
 
     steps = [
         ("Validator Unit Tests", "python tests/test_validator.py", backend_dir),
+        ("REST API Contract Tests", "python tests/test_api.py", backend_dir),
         ("Dataset Schema Validator", "python app/importer/validate_dataset.py", backend_dir),
         ("Model Policy Regression Gate", "python app/optimizer/regression.py", backend_dir),
         ("Frontend Production Build", "npm run build", frontend_dir),
