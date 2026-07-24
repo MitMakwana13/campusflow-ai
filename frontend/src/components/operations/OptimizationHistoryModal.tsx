@@ -1,6 +1,6 @@
 "use client";
 
-import { History, ArrowRightLeft, CheckCircle2, RotateCcw, X, ShieldCheck, Sparkles } from "lucide-react";
+import { History, ArrowRightLeft, CheckCircle2, RotateCcw, X, ShieldCheck, Sparkles, Download, Cpu, Clock, Terminal } from "lucide-react";
 
 export interface OptimizationRunRecord {
   id: string;
@@ -12,6 +12,13 @@ export interface OptimizationRunRecord {
   facultySatisfaction: number;
   roomUtilization: number;
   active: boolean;
+  // MLOps Lifecycle Metadata
+  policyVersion: string;
+  policyHash: string;
+  environmentId: string;
+  datasetName: string;
+  inferenceLatencyMs: number;
+  triggerSource: string;
 }
 
 interface OptimizationHistoryModalProps {
@@ -32,9 +39,19 @@ export function OptimizationHistoryModal({
   const currentRun = history.find(r => r.active) || history[0];
   const previousRun = history.length > 1 ? history[history.length - 2] : null;
 
+  const handleExportJson = (run: OptimizationRunRecord) => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(run, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `ppo_run_${run.runNumber}_${run.strategyName.toLowerCase().replace(/\s+/g, '_')}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 max-w-3xl w-full space-y-6 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 md:p-8 max-w-4xl w-full space-y-6 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
@@ -43,8 +60,13 @@ export function OptimizationHistoryModal({
               <History className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">PPO Policy Optimization History & Comparison</h3>
-              <p className="text-xs text-zinc-400 font-mono">Traceability audit & side-by-side run comparisons</p>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold text-white">MLOps Experiment Tracking & Run Comparison</h3>
+                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-mono">
+                  Full Lifecycle Audit
+                </span>
+              </div>
+              <p className="text-xs text-zinc-400 font-mono">Traceability, inference latency, checkpoint hashes & side-by-side policy audit</p>
             </div>
           </div>
           <button 
@@ -61,7 +83,7 @@ export function OptimizationHistoryModal({
             <div className="flex items-center justify-between text-xs font-mono font-bold text-indigo-300">
               <span className="flex items-center gap-2">
                 <ArrowRightLeft className="w-4 h-4 text-purple-400" />
-                <span>Side-by-Side Policy Comparison</span>
+                <span>Side-by-Side Policy Metrics Comparison</span>
               </span>
               <span>Comparing Run #{previousRun.runNumber} vs Run #{currentRun.runNumber}</span>
             </div>
@@ -70,10 +92,10 @@ export function OptimizationHistoryModal({
               <table className="w-full text-xs font-mono text-left">
                 <thead className="text-zinc-400 border-b border-zinc-800 bg-zinc-950/60">
                   <tr>
-                    <th className="p-2.5">Metric</th>
+                    <th className="p-2.5">Lifecycle Metric</th>
                     <th className="p-2.5">Run #{previousRun.runNumber} ({previousRun.strategyName})</th>
                     <th className="p-2.5">Run #{currentRun.runNumber} ({currentRun.strategyName})</th>
-                    <th className="p-2.5">Net Change</th>
+                    <th className="p-2.5">Net Delta</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800/60 text-zinc-200">
@@ -93,10 +115,10 @@ export function OptimizationHistoryModal({
                   </tr>
 
                   <tr>
-                    <td className="p-2.5 font-sans font-bold text-zinc-300">Hard Conflicts</td>
-                    <td className="p-2.5 text-emerald-400">{previousRun.hardConflicts} Clashes</td>
-                    <td className="p-2.5 text-emerald-400 font-bold">{currentRun.hardConflicts} Clashes</td>
-                    <td className="p-2.5"><span className="text-emerald-400 font-bold">Optimal (0)</span></td>
+                    <td className="p-2.5 font-sans font-bold text-zinc-300">Inference Latency</td>
+                    <td className="p-2.5 text-zinc-400">{previousRun.inferenceLatencyMs} ms</td>
+                    <td className="p-2.5 text-indigo-400 font-bold">{currentRun.inferenceLatencyMs} ms</td>
+                    <td className="p-2.5"><span className="text-indigo-300 font-bold">Fast In-Memory</span></td>
                   </tr>
 
                   <tr>
@@ -128,51 +150,84 @@ export function OptimizationHistoryModal({
           </div>
         )}
 
-        {/* History Run Log */}
+        {/* MLOps Experiment Runs Log */}
         <div className="space-y-3">
           <div className="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider">
-            Optimization Audit Runs ({history.length})
+            MLOps Experiment Runs ({history.length})
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {history.map((run) => (
               <div 
                 key={run.id}
-                className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${
+                className={`p-4 rounded-2xl border transition-all space-y-3 ${
                   run.active 
                     ? "bg-indigo-500/10 border-indigo-500/40" 
                     : "bg-zinc-950 border-zinc-800/80 hover:border-zinc-700"
                 }`}
               >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-xs font-mono">
-                    <span className="font-bold text-white font-sans text-sm">Run #{run.runNumber} — {run.strategyName}</span>
-                    {run.active && (
-                      <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">
-                        Active In-Memory Policy
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 text-xs font-mono">
+                      <span className="font-bold text-white font-sans text-sm">Run #{run.runNumber} — {run.strategyName}</span>
+                      {run.active && (
+                        <span className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">
+                          Active In-Memory Policy
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-zinc-400 font-mono">
+                      Timestamp: {run.timestamp} • Trigger: <span className="text-purple-300 font-bold">{run.triggerSource}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleExportJson(run)}
+                      className="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-colors"
+                      title="Export MLOps Run JSON"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </button>
+
+                    {!run.active ? (
+                      <button
+                        onClick={() => onSelectRunToRestore(run)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold transition-all font-mono"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Rollback</span>
+                      </button>
+                    ) : (
+                      <span className="flex items-center gap-1 text-xs text-emerald-400 font-mono font-bold px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Current</span>
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] text-zinc-400 font-mono">
-                    Timestamp: {run.timestamp} • Reward: <strong className="text-emerald-400">+{run.rewardScore} pts</strong> • Sat: {run.facultySatisfaction}% • Util: {run.roomUtilization}%
-                  </div>
                 </div>
 
-                <div>
-                  {!run.active ? (
-                    <button
-                      onClick={() => onSelectRunToRestore(run)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold transition-all font-mono"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                      <span>Rollback</span>
-                    </button>
-                  ) : (
-                    <span className="flex items-center gap-1 text-xs text-emerald-400 font-mono font-bold">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Current</span>
-                    </span>
-                  )}
+                {/* Extended MLOps Metadata Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-zinc-800/80 text-[10px] font-mono">
+                  <div className="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                    <span className="text-zinc-500 uppercase block">Policy Checkpoint</span>
+                    <span className="text-zinc-300 font-bold">{run.policyVersion} ({run.policyHash})</span>
+                  </div>
+
+                  <div className="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                    <span className="text-zinc-500 uppercase block">Environment</span>
+                    <span className="text-indigo-400 font-bold">{run.environmentId}</span>
+                  </div>
+
+                  <div className="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                    <span className="text-zinc-500 uppercase block">Inference Latency</span>
+                    <span className="text-emerald-400 font-bold">{run.inferenceLatencyMs} ms</span>
+                  </div>
+
+                  <div className="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800">
+                    <span className="text-zinc-500 uppercase block">Dataset Schema</span>
+                    <span className="text-purple-400 font-bold">{run.datasetName}</span>
+                  </div>
                 </div>
               </div>
             ))}

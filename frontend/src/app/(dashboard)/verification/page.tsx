@@ -12,8 +12,11 @@ import {
   FileCheck, 
   Sparkles,
   BarChart3,
-  ExternalLink
+  ExternalLink,
+  BookOpen
 } from "lucide-react";
+import { useState } from "react";
+import { ArchitectureDocModal } from "@/components/domain/ArchitectureDocModal";
 
 const VERIFICATION_CHECKS = [
   {
@@ -79,6 +82,8 @@ const VERIFICATION_CHECKS = [
 ];
 
 export default function VerificationPage() {
+  const [showArchModal, setShowArchModal] = useState(false);
+
   return (
     <div className="space-y-8 max-w-[1400px] mx-auto pb-12 animate-in fade-in duration-500">
       
@@ -98,6 +103,14 @@ export default function VerificationPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setShowArchModal(true)}
+            className="px-4 py-2 rounded-2xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 font-mono text-xs font-semibold transition-all flex items-center gap-2"
+          >
+            <BookOpen className="w-4 h-4 text-indigo-400" />
+            <span>Architecture & Limitations Doc</span>
+          </button>
+
           <div className="px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-sm font-bold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             <span>10 / 10 CHECKS PASSED (100%)</span>
@@ -155,6 +168,12 @@ export default function VerificationPage() {
           <span className="text-zinc-500 text-[10px]">Outputs binary evidence & report logs</span>
         </div>
       </div>
+
+      {/* Architecture & Limitations Specification Modal */}
+      <ArchitectureDocModal 
+        isOpen={showArchModal}
+        onClose={() => setShowArchModal(false)}
+      />
 
     </div>
   );

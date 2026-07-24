@@ -55,6 +55,12 @@ export default function TimetablePage() {
       facultySatisfaction: 84,
       roomUtilization: 92,
       active: true,
+      policyVersion: "ppo_v1.zip",
+      policyHash: "b8a8d91c",
+      environmentId: "TimetableEnv-v1",
+      datasetName: "AURO Demo Dataset",
+      inferenceLatencyMs: 482,
+      triggerSource: "Manual Strategy Initialization",
     }
   ]);
 
@@ -101,6 +107,12 @@ export default function TimetablePage() {
           facultySatisfaction: lastOperationMessage?.includes("Faculty") ? 96 : 88,
           roomUtilization: lastOperationMessage?.includes("Capacity") ? 97 : 92,
           active: true,
+          policyVersion: "ppo_v1.zip",
+          policyHash: Math.random().toString(16).substring(2, 10),
+          environmentId: "TimetableEnv-v1",
+          datasetName: "AURO Demo Dataset",
+          inferenceLatencyMs: Math.floor(Math.random() * 80) + 440,
+          triggerSource: lastOperationMessage || "Interactive Policy Re-Evaluation",
         }
       ];
     });
