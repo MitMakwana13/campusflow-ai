@@ -22,7 +22,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
-          pip install torch gymnasium stable-baselines3 fastapi uvicorn sqlalchemy
 
       - name: Initialize Database
         run: |
@@ -32,6 +31,19 @@ jobs:
         run: |
           python train_rl.py
 
+      - name: Generate Research Evidence Artifacts
+        run: |
+          python generate_evidence.py
+
       - name: Run Automated Verification Suite
         run: |
           python verify_project.py
+
+      - name: Upload Trained Models & Evidence Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: campusflow-ai-artifacts
+          path: |
+            rl/models/
+            rl/logs/
+            rl/evaluation/
