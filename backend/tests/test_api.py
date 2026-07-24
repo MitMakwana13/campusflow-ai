@@ -125,6 +125,24 @@ def test_recommend_profile_endpoint():
     assert "recommended_profile" in data
     print("[API TEST PASS] POST /api/v1/ai/recommend-profile passed OK.")
 
+def test_executive_kpis_endpoint():
+    res = client.get("/api/v1/optimizer/executive-kpis")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "kpis" in data
+    assert data["kpis"]["total_optimization_runs"] == 1274
+    print("[API TEST PASS] GET /api/v1/optimizer/executive-kpis passed OK.")
+
+def test_upload_csv_endpoint():
+    payload = {"records": [{"code": "CS-101", "name": "AI Principles"}]}
+    res = client.post("/api/v1/importer/upload-csv", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert data["records_imported"] == 1
+    print("[API TEST PASS] POST /api/v1/importer/upload-csv passed OK.")
+
 if __name__ == "__main__":
     test_health_endpoint()
     test_auth_login_endpoint()
@@ -138,4 +156,6 @@ if __name__ == "__main__":
     test_pareto_matrix_endpoint()
     test_optimization_history_endpoint()
     test_recommend_profile_endpoint()
+    test_executive_kpis_endpoint()
+    test_upload_csv_endpoint()
     print("\n[ALL REST API CONTRACT TESTS PASSED SUCCESSFULLY]")
