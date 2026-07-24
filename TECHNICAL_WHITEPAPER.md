@@ -131,8 +131,8 @@ CampusFlow AI incorporates enterprise MLOps capabilities:
 | **Online Policy Inference** | ✅ Implemented | Sub-second FastAPI web rollout (~482 ms) |
 | **MLOps Experiment Tracking** | ✅ Implemented | Hashes, latency, audit logging, JSON exports, rollback |
 | **Model Registry & Guard** | ✅ Implemented | Validated disk binary presence check (`ppo_v1.zip`) |
-| **Curriculum Learning** | 🚧 Planned | 3-stage progressive dataset scaling (10 ➔ 20 ➔ 40 courses) |
-| **Hybrid Optimizer Repair** | 🚧 Planned | PPO candidate rollouts + NetworkX local search repair |
+| **Curriculum Learning** | ✅ Implemented | 3-stage progressive dataset scaling (`ppo_v2_curriculum.zip`) |
+| **Hybrid Optimizer Repair** | ✅ Implemented | PPO policy rollouts + Hill-Climbing local search constraint repair |
 | **Graph State Policy (PyG)** | 📋 Research | Heterogeneous campus graph state network prototype |
 | **Online Real-Time Learning**| 📋 Future Work | Continuous streaming feedback policy fine-tuning |
 

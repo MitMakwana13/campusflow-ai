@@ -23,13 +23,15 @@ import {
   ShieldCheck,
   Sliders,
   History,
-  Box
+  Box,
+  Wrench
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OperationsActionModal } from "@/components/operations/OperationsActionModal";
 import { ConstraintTunerModal } from "@/components/operations/ConstraintTunerModal";
 import { OptimizationHistoryModal, OptimizationRunRecord } from "@/components/operations/OptimizationHistoryModal";
 import { ModelRegistryModal, ModelCheckpointRecord } from "@/components/operations/ModelRegistryModal";
+import { HybridOptimizerModal } from "@/components/operations/HybridOptimizerModal";
 
 export default function TimetablePage() {
   const [isOptimized, setIsOptimized] = useState(false);
@@ -44,6 +46,7 @@ export default function TimetablePage() {
   const [showConstraintModal, setShowConstraintModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showModelRegistryModal, setShowModelRegistryModal] = useState(false);
+  const [showHybridModal, setShowHybridModal] = useState(false);
   const [activeModel, setActiveModel] = useState<string>("ppo_v1.zip (v1.4.2)");
   const [lastOperationMessage, setLastOperationMessage] = useState<string | null>(null);
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<any[]>([]);
@@ -171,10 +174,18 @@ export default function TimetablePage() {
           </div>
           
           <button 
-            onClick={() => setShowModelRegistryModal(true)} 
+            onClick={() => setShowHybridModal(true)} 
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-xs text-purple-300 font-mono transition-all"
           >
-            <Box className="w-4 h-4 text-purple-400" />
+            <Wrench className="w-4 h-4 text-purple-400" />
+            <span>Hybrid Solver (PPO + Repair)</span>
+          </button>
+
+          <button 
+            onClick={() => setShowModelRegistryModal(true)} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs text-indigo-300 font-mono transition-all"
+          >
+            <Box className="w-4 h-4 text-indigo-400" />
             <span>Model Registry ({activeModel.split(" ")[0]})</span>
           </button>
 
@@ -480,6 +491,16 @@ export default function TimetablePage() {
           setLastOperationMessage(`Promoted model checkpoint [${model.name} v${model.version}] to active inference memory`);
           handleOptimize();
           setShowModelRegistryModal(false);
+        }}
+      />
+
+      {/* Hybrid PPO + Local Search Repair Modal */}
+      <HybridOptimizerModal 
+        isOpen={showHybridModal}
+        onClose={() => setShowHybridModal(false)}
+        onApplyHybridSchedule={(result) => {
+          setLastOperationMessage(`Applied Hybrid PPO + Hill-Climbing Repair schedule (+${result.repairRewardDelta} pts repair boost, ${result.finalConflicts} clashes)`);
+          handleOptimize();
         }}
       />
 
