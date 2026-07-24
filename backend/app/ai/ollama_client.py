@@ -25,8 +25,8 @@ class OllamaClient:
                 data = response.json()
                 return data.get("message", {}).get("content", "")
         except Exception as e:
-            print(f"[OllamaClient Notice] Local Ollama daemon unreachable ({e}). Grounded fallback active.")
-            return ""
+            print(f"[OllamaClient Notice] Local Ollama daemon unreachable ({e}). Returning deterministic explanation.")
+            return "⚠ Local Ollama is unavailable (http://localhost:11434). Showing deterministic optimization explanation instead."
 
 def chat(messages: List[Dict[str, str]], model: str = "deepseek-r1:8b") -> str:
     client = OllamaClient()

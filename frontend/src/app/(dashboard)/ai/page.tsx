@@ -21,7 +21,7 @@ export default function AIAnalystPage() {
     "Explain faculty workload distribution"
   ];
 
-  const handleSendQuery = (textToSend?: string) => {
+  const handleSendQuery = async (textToSend?: string) => {
     const activeText = textToSend || query;
     if (!activeText.trim()) return;
 
@@ -30,16 +30,30 @@ export default function AIAnalystPage() {
     setQuery("");
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: activeText })
+      });
+      const data = await res.json();
+      
+      setMessages([
+        ...newMessages,
+        {
+          role: "assistant",
+          content: data.answer || "No response received.",
+          source: "Ollama (DeepSeek-R1 8B Grounded Analyst)"
+        }
+      ]);
+    } catch (e) {
       let mockAnswer = "";
       if (activeText.includes("Building A")) {
-        mockAnswer = "**[What-If Simulation Analysis]**\n\n- **Scenario**: Closing Building A (4 rooms offline).\n- **PPO Re-evaluation**: Re-allocated 12 courses to Tech Block.\n- **Constraint Impact**: Capacity margin drops from +24.5% to +8.2%.\n- **Final Quality**: Reward score +348.0 pts, 0 hard clashes, latency 524 ms.";
+        mockAnswer = "⚠ Local Ollama is unavailable (http://localhost:11434).\n\n**[What-If Simulation Analysis]**\n- **Scenario**: Closing Building A (4 rooms offline).\n- **PPO Re-evaluation**: Re-allocated 12 courses to Tech Block.\n- **Constraint Impact**: Capacity margin drops from +24.5% to +8.2%.\n- **Final Quality**: Reward score +348.0 pts, 0 hard clashes, latency 524 ms.";
       } else if (activeText.includes("repair swaps")) {
-        mockAnswer = "**[Hill-Climbing Local Search Breakdown]**\n\n- **Initial PPO State**: 1 room clash detected on Monday Slot 2.\n- **Repair Action**: Executed 2 room swaps (Lab-2 ↔ Lab-5).\n- **Reward Gain**: Added +19.4 pts boost (Initial: +341.2 -> Final: +360.6 pts).";
-      } else if (activeText.includes("workload")) {
-        mockAnswer = "**[Faculty Workload Breakdown]**\n\n- **Faculty Cap**: Maximum 16 hrs/week enforced.\n- **Distribution**: Average faculty load is 12.4 hrs/week.\n- **Overload Penalty**: 0 faculty overload violations across 22 faculty members.";
+        mockAnswer = "⚠ Local Ollama is unavailable (http://localhost:11434).\n\n**[Hill-Climbing Local Search Breakdown]**\n- **Initial PPO State**: 1 room clash detected on Monday Slot 2.\n- **Repair Action**: Executed 2 room swaps (Lab-2 ↔ Lab-5).\n- **Reward Gain**: Added +19.4 pts boost (Initial: +341.2 -> Final: +360.6 pts).";
       } else {
-        mockAnswer = "**[Grounded PPO Trace Analysis]**\n\nBased strictly on the current PPO optimization trace for **AURO University Dataset**:\n- **Initial PPO Output**: Reward score `+341.2 pts` with `1` initial clash.\n- **Hill-Climbing Local Search**: Executed `2` room/slot swaps, adding `+19.4 pts` boost.\n- **Final Hybrid Quality**: Score reached **`+360.6 pts`** with **0 hard conflicts** in `510 ms`.";
+        mockAnswer = "⚠ Local Ollama is unavailable (http://localhost:11434).\n\n**[Grounded PPO Trace Analysis]**\n- **Initial PPO Output**: Reward score `+341.2 pts` with `1` initial clash.\n- **Hill-Climbing Local Search**: Executed `2` room/slot swaps, adding `+19.4 pts` boost.\n- **Final Hybrid Quality**: Score reached **`+360.6 pts`** with **0 hard conflicts** in `510 ms`.";
       }
 
       setMessages([
@@ -47,11 +61,12 @@ export default function AIAnalystPage() {
         {
           role: "assistant",
           content: mockAnswer,
-          source: "Ollama (DeepSeek-R1 8B Grounded Analyst)"
+          source: "Grounded Trace Reasoning Engine (Fallback)"
         }
       ]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
