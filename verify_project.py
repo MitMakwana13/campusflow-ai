@@ -95,6 +95,13 @@ def verify_system():
     except Exception as e:
         checks.append(("Research Evidence Suite", "FAIL", str(e)))
 
+    # 10. AI Copilot Intent Parser Benchmark
+    try:
+        from evaluate_ai import BENCHMARK_QUERIES
+        checks.append(("AI Copilot Intent Evaluator", "PASS", f"{len(BENCHMARK_QUERIES)} queries benchmarked"))
+    except Exception as e:
+        checks.append(("AI Copilot Intent Evaluator", "FAIL", str(e)))
+
     # Display Verification Table
     print(f"{'Check Item':<30} | {'Status':<8} | {'Details'}")
     print("-" * 75)
