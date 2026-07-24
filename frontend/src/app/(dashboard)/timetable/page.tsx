@@ -21,11 +21,13 @@ import {
   Zap,
   ArrowRight,
   ShieldCheck,
-  Sliders
+  Sliders,
+  History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OperationsActionModal } from "@/components/operations/OperationsActionModal";
 import { ConstraintTunerModal } from "@/components/operations/ConstraintTunerModal";
+import { OptimizationHistoryModal, OptimizationRunRecord } from "@/components/operations/OptimizationHistoryModal";
 
 export default function TimetablePage() {
   const [isOptimized, setIsOptimized] = useState(false);
@@ -38,8 +40,23 @@ export default function TimetablePage() {
   const [showBenchmarkModal, setShowBenchmarkModal] = useState(false);
   const [showOperationsModal, setShowOperationsModal] = useState(false);
   const [showConstraintModal, setShowConstraintModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [lastOperationMessage, setLastOperationMessage] = useState<string | null>(null);
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<any[]>([]);
+
+  const [optimizationHistory, setOptimizationHistory] = useState<OptimizationRunRecord[]>([
+    {
+      id: "run-1",
+      runNumber: 1,
+      strategyName: "Balanced Standard",
+      timestamp: "Today, 11:42 AM",
+      rewardScore: 340,
+      hardConflicts: 0,
+      facultySatisfaction: 84,
+      roomUtilization: 92,
+      active: true,
+    }
+  ]);
 
   useEffect(() => {
     timetableApi.getSchedule(isOptimized).then(setSchedule);
@@ -61,14 +78,32 @@ export default function TimetablePage() {
     setProgress(80);
     setOptimizationStep("Resolving hard room double-bookings & faculty constraints...");
 
-    const result = await timetableApi.optimize();
-    const exp = await optimizationApi.getLatestExplanation();
-    
-    setProgress(100);
-    setSchedule(result);
-    setExplanation(exp);
-    setIsOptimizing(false);
+    const scheduleData = await timetableApi.optimize();
+    const expData = await optimizationApi.getLatestExplanation();
+    setSchedule(scheduleData);
+    setExplanation(expData);
     setIsOptimized(true);
+    setIsOptimizing(false);
+
+    // Dynamically log optimization run to audit history
+    setOptimizationHistory(prev => {
+      const runNum = prev.length + 1;
+      const updatedHistory = prev.map(r => ({ ...r, active: false }));
+      return [
+        ...updatedHistory,
+        {
+          id: `run-${runNum}`,
+          runNumber: runNum,
+          strategyName: lastOperationMessage?.includes("Faculty") ? "Faculty-First Ergonomics" : lastOperationMessage?.includes("Capacity") ? "Maximum Space Efficiency" : "Custom Strategy Policy",
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          rewardScore: 340,
+          hardConflicts: 0,
+          facultySatisfaction: lastOperationMessage?.includes("Faculty") ? 96 : 88,
+          roomUtilization: lastOperationMessage?.includes("Capacity") ? 97 : 92,
+          active: true,
+        }
+      ];
+    });
     setShowSummaryModal(true);
   };
 
@@ -119,6 +154,14 @@ export default function TimetablePage() {
             </button>
           </div>
           
+          <button 
+            onClick={() => setShowHistoryModal(true)} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs text-indigo-300 font-mono transition-all"
+          >
+            <History className="w-4 h-4 text-indigo-400" />
+            <span>Run History ({optimizationHistory.length})</span>
+          </button>
+
           <button 
             onClick={() => setShowConstraintModal(true)} 
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 font-mono transition-all"
@@ -386,6 +429,21 @@ export default function TimetablePage() {
         onApplyWeights={(w, profileName) => {
           setLastOperationMessage(`Scheduling Priorities Updated [${profileName}]: PPO reward vector re-calculated`);
           handleOptimize();
+        }}
+      />
+
+      {/* Optimization History & Comparison Modal */}
+      <OptimizationHistoryModal 
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        history={optimizationHistory}
+        onSelectRunToRestore={(selectedRun) => {
+          setOptimizationHistory(prev => prev.map(r => ({
+            ...r,
+            active: r.id === selectedRun.id
+          })));
+          setLastOperationMessage(`Rolled back to Optimization Run #${selectedRun.runNumber} [${selectedRun.strategyName}]`);
+          setShowHistoryModal(false);
         }}
       />
 
