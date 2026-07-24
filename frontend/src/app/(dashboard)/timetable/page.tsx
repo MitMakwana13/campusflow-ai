@@ -22,12 +22,14 @@ import {
   ArrowRight,
   ShieldCheck,
   Sliders,
-  History
+  History,
+  Box
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OperationsActionModal } from "@/components/operations/OperationsActionModal";
 import { ConstraintTunerModal } from "@/components/operations/ConstraintTunerModal";
 import { OptimizationHistoryModal, OptimizationRunRecord } from "@/components/operations/OptimizationHistoryModal";
+import { ModelRegistryModal, ModelCheckpointRecord } from "@/components/operations/ModelRegistryModal";
 
 export default function TimetablePage() {
   const [isOptimized, setIsOptimized] = useState(false);
@@ -41,6 +43,8 @@ export default function TimetablePage() {
   const [showOperationsModal, setShowOperationsModal] = useState(false);
   const [showConstraintModal, setShowConstraintModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showModelRegistryModal, setShowModelRegistryModal] = useState(false);
+  const [activeModel, setActiveModel] = useState<string>("ppo_v1.zip (v1.4.2)");
   const [lastOperationMessage, setLastOperationMessage] = useState<string | null>(null);
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<any[]>([]);
 
@@ -166,6 +170,14 @@ export default function TimetablePage() {
             </button>
           </div>
           
+          <button 
+            onClick={() => setShowModelRegistryModal(true)} 
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-xs text-purple-300 font-mono transition-all"
+          >
+            <Box className="w-4 h-4 text-purple-400" />
+            <span>Model Registry ({activeModel.split(" ")[0]})</span>
+          </button>
+
           <button 
             onClick={() => setShowHistoryModal(true)} 
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-xs text-indigo-300 font-mono transition-all"
@@ -456,6 +468,18 @@ export default function TimetablePage() {
           })));
           setLastOperationMessage(`Rolled back to Optimization Run #${selectedRun.runNumber} [${selectedRun.strategyName}]`);
           setShowHistoryModal(false);
+        }}
+      />
+
+      {/* PPO Model Registry Modal */}
+      <ModelRegistryModal 
+        isOpen={showModelRegistryModal}
+        onClose={() => setShowModelRegistryModal(false)}
+        onSelectActiveModel={(model) => {
+          setActiveModel(`${model.name} (v${model.version})`);
+          setLastOperationMessage(`Promoted model checkpoint [${model.name} v${model.version}] to active inference memory`);
+          handleOptimize();
+          setShowModelRegistryModal(false);
         }}
       />
 
