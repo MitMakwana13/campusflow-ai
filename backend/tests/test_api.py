@@ -109,6 +109,22 @@ def test_pareto_matrix_endpoint():
     assert len(data["pareto_matrix"]) == 4
     print("[API TEST PASS] GET /api/v1/optimizer/pareto-matrix passed OK.")
 
+def test_optimization_history_endpoint():
+    res = client.get("/api/v1/optimizer/history")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "history" in data
+    print("[API TEST PASS] GET /api/v1/optimizer/history passed OK.")
+
+def test_recommend_profile_endpoint():
+    res = client.post("/api/v1/ai/recommend-profile")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "success"
+    assert "recommended_profile" in data
+    print("[API TEST PASS] POST /api/v1/ai/recommend-profile passed OK.")
+
 if __name__ == "__main__":
     test_health_endpoint()
     test_auth_login_endpoint()
@@ -120,4 +136,6 @@ if __name__ == "__main__":
     test_ai_tools_endpoints()
     test_marl_optimize_endpoint()
     test_pareto_matrix_endpoint()
+    test_optimization_history_endpoint()
+    test_recommend_profile_endpoint()
     print("\n[ALL REST API CONTRACT TESTS PASSED SUCCESSFULLY]")

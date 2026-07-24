@@ -93,7 +93,14 @@ class OptimizationRun(Base):
     utilization_before = Column(Float, default=0.68)
     utilization_after = Column(Float, default=0.92)
     status = Column(String, default="COMPLETED")
-    model_version = Column(String, default="ppo_v1.0")
+    
+    # Enterprise Traceability Provenance
+    dataset_version = Column(String, default="auro_bsc_it_v1.0")
+    policy_version = Column(String, default="ppo_v2_curriculum.zip")
+    repair_version = Column(String, default="hill_climbing_v1.8")
+    profile_name = Column(String, default="Balanced")
+    git_commit = Column(String, default="9fac41d")
+    optimizer_version = Column(String, default="2.0.0")
 
 class OptimizationProfile(Base):
     __tablename__ = "optimization_profiles"
