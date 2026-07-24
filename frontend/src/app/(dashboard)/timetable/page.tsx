@@ -52,8 +52,16 @@ export default function TimetablePage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [activeModel, setActiveModel] = useState<string>("ppo_v1.zip (v1.4.2)");
   const [activeDatasetName, setActiveDatasetName] = useState<string>("AURO Demo Dataset (30 Courses)");
+  const [isBackendOnline, setIsBackendOnline] = useState<boolean>(true);
   const [lastOperationMessage, setLastOperationMessage] = useState<string | null>(null);
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/v1/health")
+      .then((res) => res.json())
+      .then(() => setIsBackendOnline(true))
+      .catch(() => setIsBackendOnline(false));
+  }, []);
 
   const [optimizationHistory, setOptimizationHistory] = useState<OptimizationRunRecord[]>([
     {
@@ -146,6 +154,32 @@ export default function TimetablePage() {
   return (
     <div className="space-y-8 max-w-[1400px] mx-auto pb-12 animate-in fade-in duration-500">
       
+      {/* Backend Offline Status Banner */}
+      {!isBackendOnline && (
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-center justify-between shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 font-bold shrink-0">
+              ⚡
+            </div>
+            <div>
+              <span className="font-bold block text-white text-sm">FastAPI Backend Server Offline</span>
+              <span>Start local server to execute live PPO rollouts: <code className="bg-amber-950 px-2 py-0.5 rounded text-amber-200">uvicorn app.main:app --reload --port 8000</code></span>
+            </div>
+          </div>
+          <button 
+            onClick={() => {
+              fetch("http://localhost:8000/api/v1/health")
+                .then((res) => res.json())
+                .then(() => setIsBackendOnline(true))
+                .catch(() => setIsBackendOnline(false));
+            }}
+            className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30 shrink-0 transition-colors"
+          >
+            Retry Health Ping
+          </button>
+        </div>
+      )}
+
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800/80 pb-6">
         <div>
